@@ -62,6 +62,64 @@ class Parser {
     return precedence;
   }
 
+  Program parseProgram() {
+    var program = Program(<Statement>[]);
+    while (currentToken?.tokenType != TokenType.EOF) {
+      var statement = parseStatement();
+      if (statement != null) {
+        program.statements.add(statement);
+      }
+      
+      advanceTokens();
+    }
+
+    return program;
+  }
+
+  Expression parseBoolean() {
+    assert(currentToken != null);
+    if (currentToken?.tokenType == TokenType.TRUE) {
+      return Boolean(true, currentToken!);
+    }
+
+    return Boolean(false, currentToken!);
+  }
+
+  Expression parseCall(Expression func) {
+    assert(currentToken != null);
+    var call = Call(func, <Expression>[], currentToken!);
+    call.arguments = parseCallArguemts()!;
+    return call;
+  }
+
+  List<Expression>? parseCallArguemts() {
+    assert(currentToken != null);
+    var args = <Expression>[];
+    if (peekToken?.tokenType == TokenType.BAR) {
+      advanceTokens();
+      return args;
+    }
+
+    advanceTokens();
+    var expression = parseExpression(Precedence.LOWEST);
+    if (expression != null) {
+      args.add(expression);
+    }
+
+    while (peekToken?.tokenType == TokenType.COMMA) {
+      expression = parseExpression(Precedence.LOWEST);
+      if (expression != null) {
+        args.add(expression);
+      }
+    }
+
+    if (!expectedToken(TokenType.BAR)) {
+      return null;
+    }
+
+    return args;
+  }
+
   List<String> errors() {
     return _errors;
   }
@@ -113,6 +171,20 @@ class Parser {
     }
 
     return expression;
+  }
+
+
+  Expression parseStringLiteral() {
+    assert(currentToken != null);
+    return StringLiteral(currentToken!.literal, currentToken!);
+  }
+
+  Expression parsePrefixExpression() {
+    assert(currentToken != null);
+    var prefix = Prefix(currentToken!.literal, null, currentToken!);
+    advanceTokens();
+    prefix.rigth = parseExpression(Precedence.PREFIX);
+    return prefix;
   }
 
   Expression? parseFunction() {
@@ -198,6 +270,51 @@ class Parser {
     return block;
   }
 
+  Expression? parseIf() {
+    var ifExpression = IfExpression(null, null, null, currentToken!);
+    if (!expectedToken(TokenType.LPAREN)) {
+      return null;
+    }
+
+    advanceTokens();
+    ifExpression.condition = parseExpression(Precedence.LOWEST);
+    if (!expectedToken(TokenType.RPAREN)) {
+      return null;
+    }
+
+    if (!expectedToken(TokenType.LBRACE)) {
+      return null;
+    }
+
+    ifExpression.consequence = parseBlock();
+    assert(peekToken != null);
+    if (peekToken?.tokenType == TokenType.ELSE) {
+      advanceTokens();
+      if (!expectedToken(TokenType.LBRACE)) {
+        return null;
+      }
+
+      ifExpression.alternative = parseBlock();
+    }
+
+    return ifExpression;
+  }
+
+  Expression? parseInteger() {
+    assert(currentToken != null);
+    var integer = Integer(0, currentToken!);
+
+    var val = int.tryParse(currentToken!.literal);
+    if (val == null) {
+      var message = 'Is not a int ${currentToken?.literal}';
+      _errors.add(message);
+      return null;
+    }
+
+    integer.value = val;
+    return integer;  
+  }
+
   Expression? parseExpression(Precedence precedence) {
     assert(currentToken != null);
     var prefixFn = prefixFns[currentToken?.tokenType];
@@ -242,5 +359,15 @@ class Parser {
     assert(currentToken != null);
     var err = 'Syntax error expected ${type.toString()} but got ${currentToken?.tokenType.toString()}';
     _errors.add(err);
+  }
+
+  PrefixParseFns registerPrefixFns() {
+    var prefixFns = {
+      TokenType.FALSE: parseBoolean,
+      TokenType.FUNCTION: parseFunction,
+      TokenType.IDENT: parseIdentifier,
+    };
+
+    return prefixFns;
   }
 }

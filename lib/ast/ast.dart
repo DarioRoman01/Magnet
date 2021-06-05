@@ -122,13 +122,13 @@ class Integer extends Expression {
 
 class Prefix extends Expression {
   String operattor;
-  Expression rigth;
+  Expression? rigth;
 
   Prefix(this.operattor, this.rigth, Token token) : super(token);
 
   @override
   String str() {
-    return '($operattor ${rigth.str()})';
+    return '($operattor ${rigth!.str()})';
   }
 }
 
@@ -157,14 +157,14 @@ class Boolean extends Expression {
 }
 
 class Block extends Statement {
-  List<Statement>? statements;
+  List<Statement> statements;
 
   Block(this.statements, Token token) : super(token);
 
   @override
   String str() {
     var out = <String>[];
-    for (var statement in statements!) {
+    for (var statement in statements) {
       out.add(statement.str());
     }
 
@@ -173,9 +173,9 @@ class Block extends Statement {
 }
 
 class IfExpression extends Expression {
-  Expression condition;
-  Block consequence;
-  Block alternative;
+  Expression? condition;
+  Block? consequence;
+  Block? alternative;
 
   IfExpression(this.condition, this.consequence, this.alternative, Token token)
       : super(token);
@@ -183,10 +183,10 @@ class IfExpression extends Expression {
   @override
   String str() {
     var buff = StringBuffer();
-    buff.write('if ${condition.str()} ${consequence.str()}');
+    buff.write('if ${condition!.str()} ${consequence!.str()}');
 
     if (alternative != null) {
-      buff.write('else ${consequence.str()}');
+      buff.write('else ${consequence!.str()}');
     }
 
     return buff.toString();
