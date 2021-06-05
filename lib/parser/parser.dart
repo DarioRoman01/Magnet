@@ -441,6 +441,27 @@ class Parser {
     _errors.add(err);
   }
 
+  InfixParseFns registerInfixFns() {
+    var infixFns = {
+      TokenType.PLUS: parseInfixExpression,
+      TokenType.MINUS: parseInfixExpression,
+      TokenType.DIVISION: parseInfixExpression,
+      TokenType.TIMES: parseInfixExpression,
+      TokenType.EQ: parseInfixExpression,
+      TokenType.NOT_EQ: parseInfixExpression,
+      TokenType.GTOREQ: parseInfixExpression,
+      TokenType.LTOREQ: parseInfixExpression,
+      TokenType.LT: parseInfixExpression,
+      TokenType.GT: parseInfixExpression,
+      TokenType.LPAREN: parseCall,
+      TokenType.MOD: parseInfixExpression,
+      TokenType.AND: parseInfixExpression,
+      TokenType.OR: parseInfixExpression,
+    };
+
+    return infixFns;
+  }
+
   PrefixParseFns registerPrefixFns() {
     var prefixFns = {
       TokenType.FALSE: parseBoolean,
@@ -454,8 +475,7 @@ class Parser {
       TokenType.NOT: parsePrefixExpression,
       TokenType.TRUE: parseBoolean,
       TokenType.STRING: parseStringLiteral,
-      TokenType.LPAREN: parseGroupExpression,
-      TokenType.LPAREN: parseGroupExpression,
+      TokenType.DATASTRCUT: parseArray,
     };
 
     return prefixFns;
