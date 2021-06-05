@@ -65,49 +65,47 @@ class Program extends ASTNode {
 }
 
 class Identifier extends Expression {
-  String value;
+  String? value;
 
-  Identifier(Token token, String value) : super(token) {
-    this.value = value;
-  }
+  Identifier(this.value, Token token) : super(token);
 
   @override
   String str() {
-    return value;
+    return value!;
   }
 }
 
 class LetStatement extends Statement {
-  Identifier name;
-  Expression value;
+  Identifier? name;
+  Expression? value;
 
   LetStatement(this.name, this.value, Token token) : super(token);
 
   @override
   String str() {
-    return '@${name.str()} = ${value.str()}';
+    return '@${name?.str()} = ${value?.str()}';
   }
 }
 
 class ReturnStatement extends Statement {
-  Expression returnValue;
+  Expression? returnValue;
 
   ReturnStatement(this.returnValue, Token token) : super(token);
 
   @override
   String str() {
-    return '$tokenLitertal() ${returnValue.str()}';
+    return '$tokenLitertal() ${returnValue?.str()}';
   }
 }
 
 class ExpressionStatement extends Statement {
-  Expression expression;
+  Expression? expression;
 
   ExpressionStatement(this.expression, Token token) : super(token);
 
   @override
   String str() {
-    return expression.str();
+    return expression!.str();
   }
 }
 
