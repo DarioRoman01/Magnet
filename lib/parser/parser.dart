@@ -187,6 +187,15 @@ class Parser {
     return prefix;
   }
 
+  Expression? parseInfixExpression(Expression left) {
+    assert(currentToken != null);
+    var infix = Infix(null, currentToken!.literal, left, currentToken!);
+    var precedence = currentPrecedence();
+    advanceTokens();
+    infix.rigth = parseExpression(precedence);
+    return infix;
+  }
+
   Expression? parseFunction() {
     assert(currentToken != null);
     var func = FunctionExpression(null, null, currentToken!);
@@ -195,6 +204,13 @@ class Parser {
     }
 
     func.parameters = parseFunctionParameters();
+
+    if (!expectedToken(TokenType.ARROW)) {
+      return null;
+    }
+
+    advanceTokens();
+
     if (!expectedToken(TokenType.LBRACE)) {
       return null;
     }
@@ -269,6 +285,49 @@ class Parser {
 
     return block;
   }
+  
+  Expression? parseArray() {
+    assert(currentToken != null);
+    var arr = Array(<Expression>[], currentToken!);
+    if (!expectedToken(TokenType.LBRACKET)) {
+      return null;
+    }
+
+    arr.values = parseArrayValues()!;
+    return arr;
+  }
+
+  List<Expression>? parseArrayValues() {
+    assert(currentToken != null);
+    var values = <Expression>[];
+    if (peekToken?.tokenType == TokenType.RBRACKET) {
+      advanceTokens();
+      return values;
+    }
+
+    advanceTokens();
+    var expression = parseExpression(Precedence.LOWEST);
+    if (expression != null) {
+      values.add(expression);
+    }
+
+    while(peekToken?.tokenType == TokenType.COMMA) {
+      advanceTokens();
+      advanceTokens();
+
+      expression = parseExpression(Precedence.LOWEST);
+      if (expression != null) {
+        values.add(expression);
+      }
+    }
+
+    if (!expectedToken(TokenType.RBRACKET)) {
+      return null;
+    }
+
+    return values;
+  }
+
 
   Expression? parseIf() {
     var ifExpression = IfExpression(null, null, null, currentToken!);
@@ -313,6 +372,27 @@ class Parser {
 
     integer.value = val;
     return integer;  
+  }
+
+  Expression? parseWhile() {
+    assert(currentToken != null);
+    var whileExp = WhileLoop(null, null, currentToken!);
+    if (!expectedToken(TokenType.LPAREN)) {
+      return null;
+    }
+
+    advanceTokens();
+    whileExp.condition = parseExpression(Precedence.LOWEST);
+    if (!expectedToken(TokenType.RPAREN)) {
+      return null;
+    }
+
+    if (!expectedToken(TokenType.LBRACE)) {
+      return null;
+    }
+
+    whileExp.body = parseBlock();
+    return whileExp;
   }
 
   Expression? parseExpression(Precedence precedence) {
@@ -365,7 +445,17 @@ class Parser {
     var prefixFns = {
       TokenType.FALSE: parseBoolean,
       TokenType.FUNCTION: parseFunction,
+      TokenType.WHILE: parseWhile,
       TokenType.IDENT: parseIdentifier,
+      TokenType.IF: parseIf,
+      TokenType.INT: parseInteger,
+      TokenType.LPAREN: parseGroupExpression,
+      TokenType.MINUS: parsePrefixExpression,
+      TokenType.NOT: parsePrefixExpression,
+      TokenType.TRUE: parseBoolean,
+      TokenType.STRING: parseStringLiteral,
+      TokenType.LPAREN: parseGroupExpression,
+      TokenType.LPAREN: parseGroupExpression,
     };
 
     return prefixFns;

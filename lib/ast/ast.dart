@@ -133,15 +133,15 @@ class Prefix extends Expression {
 }
 
 class Infix extends Expression {
-  Expression rigth;
+  Expression? rigth;
   String operattor;
-  Expression left;
+  Expression? left;
 
   Infix(this.rigth, this.operattor, this.left, Token token) : super(token);
 
   @override
   String str() {
-    return '(${left.str()} $operattor ${rigth.str()})';
+    return '(${left!.str()} $operattor ${rigth!.str()})';
   }
 }
 
@@ -252,14 +252,14 @@ class ForLoop extends Expression {
 }
 
 class WhileLoop extends Expression {
-  Expression condition;
-  Block body;
+  Expression? condition;
+  Block? body;
 
   WhileLoop(this.condition, this.body, Token token) : super(token);
 
   @override
   String str() {
-    return '${tokenLitertal()} (${condition.str()}) ${body.str()}';
+    return '${tokenLitertal()} (${condition!.str()}) ${body!.str()}';
   }
 }
 
