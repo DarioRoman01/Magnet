@@ -288,7 +288,7 @@ class Parser {
   
   Expression? parseArray() {
     assert(currentToken != null);
-    var arr = Array(<Expression>[], currentToken!);
+    var arr = ArrayExpression(<Expression>[], currentToken!);
     if (!expectedToken(TokenType.LBRACKET)) {
       return null;
     }

@@ -263,10 +263,10 @@ class WhileLoop extends Expression {
   }
 }
 
-class Array extends Expression {
+class ArrayExpression extends Expression {
   List<Expression> values;
 
-  Array(this.values, Token token) : super(token);
+  ArrayExpression(this.values, Token token) : super(token);
 
   @override
   String str() {
