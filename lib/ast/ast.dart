@@ -157,14 +157,14 @@ class Boolean extends Expression {
 }
 
 class Block extends Statement {
-  List<Statement> statements;
+  List<Statement>? statements;
 
   Block(this.statements, Token token) : super(token);
 
   @override
   String str() {
     var out = <String>[];
-    for (var statement in statements) {
+    for (var statement in statements!) {
       out.add(statement.str());
     }
 
@@ -194,20 +194,20 @@ class IfExpression extends Expression {
 }
 
 class FunctionExpression extends Expression {
-  List<Identifier> parameters;
-  Block body;
+  List<Identifier>? parameters;
+  Block? body;
 
   FunctionExpression(this.parameters, this.body, Token token) : super(token);
 
   @override
   String str() {
     var paramList = <String>[];
-    for (var param in parameters) {
+    for (var param in parameters!) {
       paramList.add(param.str());
     }
 
     var params = paramList.join(' ');
-    return '${tokenLitertal()}($params) ${body.str()}';
+    return '${tokenLitertal()}($params) ${body!.str()}';
   }
 }
 

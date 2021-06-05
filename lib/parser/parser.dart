@@ -105,6 +105,58 @@ class Parser {
     return statement;
   }
 
+  Expression? parseGroupExpression() {
+    advanceTokens();
+    var expression = parseExpression(Precedence.LOWEST);
+    if (!expectedToken(TokenType.RPAREN)) {
+      return null;
+    }
+
+    return expression;
+  }
+
+  Expression? parseFunction() {
+    assert(currentToken != null);
+    var func = FunctionExpression(null, null, currentToken!);
+    if (!expectedToken(TokenType.BAR)) {
+      return null;
+    }
+
+    func.parameters = parseFunctionParameters();
+    if (!expectedToken(TokenType.LBRACE)) {
+      return null;
+    }
+
+    func.body = parseBlock();
+    return func;
+  }
+
+  List<Identifier> parseFunctionParameters() {
+    assert(peekToken != null);
+    var params = <Identifier>[];
+    if (peekToken?.tokenType == TokenType.BAR) {
+      advanceTokens();
+      return params;
+    }
+
+    advanceTokens();
+    var identifier = Identifier(currentToken?.literal, currentToken!);
+    params.add(identifier);
+
+    while (peekToken?.tokenType == TokenType.COMMA) {
+      advanceTokens();
+      advanceTokens();
+      identifier = Identifier(currentToken?.literal, currentToken!);
+      params.add(identifier);
+    }
+
+    if (!expectedToken(TokenType.BAR)) {
+      return <Identifier>[];
+    }
+
+    return params;
+  }
+
   Statement? parseLetStatement() {
     assert(currentToken != null);
     var statement = LetStatement(null, null, currentToken!);
@@ -125,6 +177,25 @@ class Parser {
     }
 
     return statement;
+  }
+
+  Block parseBlock() {
+    assert(currentToken != null);
+    var block = Block(<Statement>[], currentToken!);
+    advanceTokens();
+
+    while (
+      !(currentToken?.tokenType == TokenType.LBRACE) && 
+      !(currentToken?.tokenType == TokenType.EOF)) {
+        var statement = parseStatement();
+        if (statement != null) {
+          block.statements.add(statement);
+        }
+
+        advanceTokens();
+    }
+
+    return block;
   }
 
   Expression? parseExpression(Precedence precedence) {
