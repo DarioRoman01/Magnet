@@ -1,3 +1,5 @@
-int calculate() {
-  return 6 * 7;
+import 'package:Magnet/repl/repl.dart';
+
+void start() {
+  startRpl();
 }

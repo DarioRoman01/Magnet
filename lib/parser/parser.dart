@@ -49,7 +49,8 @@ class Parser {
     _errors = <String>[];
     prefixFns = registerPrefixFns();
     infixFns = registerInfixFns();
-    advanceTokens();
+    currentToken = null;
+    peekToken = lexer.nextToken();
     advanceTokens();
   }
 
