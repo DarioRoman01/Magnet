@@ -1,4 +1,5 @@
 import 'package:Magnet/ast/ast.dart';
+import 'package:Magnet/builtins/builtins.dart';
 import 'package:Magnet/object/object.dart';
 
 final SingletonTrue = Bool(true);
@@ -73,6 +74,16 @@ Object evaluate(ASTNode node, Enviroment env) {
 
     case ArrayExpression:
       return evaluateArray(node as ArrayExpression, env);
+    
+    case Call: {
+      var call = node as Call;
+      var func = evaluate(call.function, env);
+      var args = evaluateExpression(call.arguments, env);
+      return applyFunction(func, args);
+    }
+    
+    case StringLiteral:
+      return Str((node as StringLiteral).value);
 
     default:
       return SingletonNull;
@@ -102,7 +113,7 @@ Object applyFunction(Object fn, List<Object> args) {
     var evaluated = evaluate(func.body, extendEnv);
     return unwrapReturnValue(evaluated);
   }
-  
+
   else if(fn.runtimeType == BuiltIn) {
     return (fn as BuiltIn).fn(args);
   }
@@ -118,20 +129,6 @@ Enviroment extendFunctionEnviroment(Def fn, List<Object> args) {
 
    return env;
 }
-
-// func applyFunction(fn Object, args []Object) Object {
-// 	if function, isFn := fn.(*Def); isFn {
-// 		extendedEnviron := extendFunctionEnviroment(function, args)
-// 		evaluated := Evaluate(function.Body, extendedEnviron)
-// 		CheckIsNotNil(evaluated)
-// 		return unwrapReturnValue(evaluated)
-
-// 	} else if builtin, isBuiltin := fn.(*Builtin); isBuiltin {
-// 		return builtin.Fn(args...)
-// 	}
-
-// 	return newError(notAFunction(types[fn.Type()]))
-// }
 
 Object unwrapReturnValue(Object obj) {
   return obj.runtimeType == Return ? (obj as Return).value : obj; 
@@ -149,10 +146,15 @@ Object evaluateArray(ArrayExpression arr, Enviroment env) {
 Object evaluateIdentifier(Identifier node, Enviroment env) {
   var value = env.getItem(node.value!);
   if (value == null) {
-    // TODO: implement builtins
+    var builtin = Builtins[node.value];
+    if (builtin == null) {
+      return unkownIdentifier(node.value!);
+    }
+
+    return builtin;
   }
 
-  return value!;
+  return value;
 }
 
 Object evaluateBLockStaments(Block block, Enviroment env) {
@@ -165,6 +167,16 @@ Object evaluateBLockStaments(Block block, Enviroment env) {
   }
 
   return result!;
+}
+
+List<Object> evaluateExpression(List<Expression> expressions, Enviroment env) {
+  var result = <Object>[];
+  for (final expression in expressions) {
+    var evaluated = evaluate(expression, env);
+    result.add(evaluated);
+  }
+
+  return result;
 }
 
 Object evaluateWhileloop(WhileLoop whileLoop, Enviroment env) {
@@ -363,3 +375,6 @@ Error notAFunction(String ident) {
   return Error('Not a function: $ident');
 }
 
+Error unkownIdentifier(String ident) {
+  return Error('unkown identifier: $ident');
+}
