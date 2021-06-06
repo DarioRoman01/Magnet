@@ -31,6 +31,46 @@ Object evaluate(ASTNode node, Enviroment env) {
       return evaluatePrefixExpression(prefix.operattor, rigth);
     }
 
+    case Infix: {
+      var val = node as Infix;
+      assert(val.left != null && val.rigth != null);
+      var left = evaluate(val.left!, env);
+      var rigth = evaluate(val.rigth!, env);
+      return evaluateInfixExpression(val.operattor, left, rigth);
+    }
+
+    case Block:
+      return evaluateBLockStaments(node as Block, env);
+
+    case WhileLoop:
+      return evaluateWhileloop(node as WhileLoop, env);
+
+    case IfExpression:
+      return evaluateIfExpression(node as IfExpression, env);
+
+    case ReturnStatement: {
+      var statement = node as ReturnStatement;
+      assert(statement.returnValue != null);
+      var value = evaluate(statement.returnValue!, env);
+      return Return(value);
+    }
+
+    case LetStatement: {
+      var statement = node as LetStatement;
+      assert(statement.value != null && statement.name != null);
+      var value = evaluate(statement.value!, env);
+      env.setItem(statement.name!.value!, value);
+      return SingletonNull;
+    }
+
+    case Identifier:
+      return evaluateIdentifier(node as Identifier, env);
+
+    case FunctionExpression:
+      var fn = node as FunctionExpression;
+      assert(fn.body != null);
+      return Def(fn.parameters!, fn.body!, env);
+
     case ArrayExpression:
       return evaluateArray(node as ArrayExpression, env);
 
@@ -55,6 +95,48 @@ Object evaluateProgram(Program program, Enviroment env) {
   return result!;
 }
 
+Object applyFunction(Object fn, List<Object> args) {
+  if (fn.runtimeType == Def) {
+    var func = fn as Def;
+    var extendEnv = extendFunctionEnviroment(func, args);
+    var evaluated = evaluate(func.body, extendEnv);
+    return unwrapReturnValue(evaluated);
+  }
+  
+  else if(fn.runtimeType == BuiltIn) {
+    return (fn as BuiltIn).fn(args);
+  }
+
+  return notAFunction(fn.type().toString());
+}
+
+Enviroment extendFunctionEnviroment(Def fn, List<Object> args) {
+  var env = Enviroment(fn.env);
+   fn.parameters.forEach((param) => { 
+     env.setItem(param.value!, args[fn.parameters.indexOf(param)])
+   });
+
+   return env;
+}
+
+// func applyFunction(fn Object, args []Object) Object {
+// 	if function, isFn := fn.(*Def); isFn {
+// 		extendedEnviron := extendFunctionEnviroment(function, args)
+// 		evaluated := Evaluate(function.Body, extendedEnviron)
+// 		CheckIsNotNil(evaluated)
+// 		return unwrapReturnValue(evaluated)
+
+// 	} else if builtin, isBuiltin := fn.(*Builtin); isBuiltin {
+// 		return builtin.Fn(args...)
+// 	}
+
+// 	return newError(notAFunction(types[fn.Type()]))
+// }
+
+Object unwrapReturnValue(Object obj) {
+  return obj.runtimeType == Return ? (obj as Return).value : obj; 
+}
+
 Object evaluateArray(ArrayExpression arr, Enviroment env) {
   var list = Array(<Object>[]);
   for (var val in arr.values) {
@@ -62,6 +144,54 @@ Object evaluateArray(ArrayExpression arr, Enviroment env) {
   }
 
   return list;
+}
+
+Object evaluateIdentifier(Identifier node, Enviroment env) {
+  var value = env.getItem(node.value!);
+  if (value == null) {
+    // TODO: implement builtins
+  }
+
+  return value!;
+}
+
+Object evaluateBLockStaments(Block block, Enviroment env) {
+  Object? result;
+  for (var statement in block.statements) {
+    result = evaluate(statement, env);
+    if (result.type() == ObjectType.RETURNTYPE || result.type() == ObjectType.ERROR) {
+      return result;
+    }
+  }
+
+  return result!;
+}
+
+Object evaluateWhileloop(WhileLoop whileLoop, Enviroment env) {
+  assert(whileLoop.condition != null);
+  var condition = evaluate(whileLoop.condition!, env);
+  
+  if(!isTruthy(condition)) {
+    return SingletonNull;
+  }
+
+  evaluate(whileLoop.body!, env);
+  return evaluate(whileLoop, env);
+
+}
+
+bool isTruthy(Object obj) {
+  if (obj == SingletonNull) {
+    return false;
+  }
+  else if(obj == SingletonTrue) {
+    return true;
+  }
+  else if(obj == SingletonFalse) {
+    return false;
+  }
+
+  return true;
 }
 
 Object toBooleanObject(bool val) => val ? SingletonTrue : SingletonFalse;
@@ -99,6 +229,21 @@ Object evaluatePrefixExpression(String operat, Object rigth) {
     default:
       return Error('unkown operator: $operat ${rigth.type().toString()}');
   }
+}
+
+Object evaluateIfExpression(IfExpression ifExp, Enviroment env) {
+  assert(ifExp.condition != null);
+  var condition = evaluate(ifExp.condition!, env);
+
+  if (isTruthy(condition)) {
+    assert(ifExp.consequence != null);
+    return evaluate(ifExp.consequence!, env);
+  } 
+  else if (ifExp.alternative != null) {
+    return evaluate(ifExp.alternative!, env);
+  }
+
+  return SingletonNull;
 }
 
 Object evaluateInfixExpression(String operate, Object left, Object rigth) {
@@ -212,5 +357,9 @@ Error typeMismatchError(String left, operate, rigth) {
 
 Error unkownInfixExpression(String left, operate, rigth) {
   return Error('unkown operator: $left $operate $rigth');
+}
+
+Error notAFunction(String ident) {
+  return Error('Not a function: $ident');
 }
 
