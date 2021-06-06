@@ -34,6 +34,9 @@ class Lexer {
     } else if (RegExp(r'^\)$').hasMatch(character)) {
       token = Token(TokenType.RPAREN, character);
 
+    } else if (RegExp(r'^\@$').hasMatch(character)) {
+      token = Token(TokenType.LET, character);
+
     } else if (RegExp(r'^\[$').hasMatch(character)) {
       token = Token(TokenType.LBRACKET, character);
 
@@ -49,7 +52,7 @@ class Lexer {
     } else if (RegExp(r'^:$').hasMatch(character)) {
       token = Token(TokenType.COLON, character);
   
-    } else if (RegExp(r'^.$').hasMatch(character)) {
+    } else if (RegExp(r'^\.$').hasMatch(character)) {
       token = Token(TokenType.DOT, character);
 
     } else if (RegExp(r'^;$').hasMatch(character)) {
@@ -131,7 +134,7 @@ class Lexer {
   bool isNumber(String char) => RegExp(r'^\d$').hasMatch(character);
 
   void readCharacter() {
-    if (read_position > source.length) {
+    if (read_position >= source.length) {
       character = '';
     } else {
       character = source[read_position];

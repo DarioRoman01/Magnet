@@ -18,8 +18,8 @@ void startRpl() {
   var scanned = <String>[];
 
   while(true) {
-    print('>>');
-    var source = stdin.readLineSync(encoding: Encoding.getByName('utf-8')!);
+    stdout.write('>>> ');
+    var source = stdin.readLineSync();
     if (source! == 'exit()') {
       break;
     }

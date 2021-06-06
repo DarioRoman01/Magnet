@@ -62,7 +62,6 @@ TokenType lookUpTokenType(String literal) {
     'return': TokenType.RETURN,
     'if': TokenType.IF,
     'else': TokenType.ELSE,
-    '@': TokenType.LET,
     'true': TokenType.TRUE,
     'while': TokenType.WHILE,
     'for': TokenType.FOR,

@@ -50,7 +50,8 @@ class Parser {
     prefixFns = registerPrefixFns();
     infixFns = registerInfixFns();
     currentToken = null;
-    peekToken = lexer.nextToken();
+    peekToken = null;
+    advanceTokens();
     advanceTokens();
   }
 
