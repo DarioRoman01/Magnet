@@ -11,9 +11,7 @@ class Statement extends ASTNode {
   Statement(this.token);
 
   @override
-  String str() {
-    throw UnimplementedError();
-  }
+  String str() => throw UnimplementedError();
 
   @override
   String tokenLitertal() => token.literal;
@@ -25,14 +23,10 @@ class Expression extends ASTNode {
   Expression(this.token);
 
   @override
-  String str() {
-    throw UnimplementedError();
-  }
+  String str() => throw UnimplementedError();
 
   @override
-  String tokenLitertal() {
-    return token.literal;
-  }
+  String tokenLitertal() => token.literal;
 }
 
 class Program extends ASTNode {
@@ -43,10 +37,7 @@ class Program extends ASTNode {
   @override
   String str() {
     var out = <String>[];
-    for (var stament in statements) {
-      out.add(stament.str());
-    }
-
+    statements.forEach((e) => out.add(e.str()));
     return out.join('');
   }
 
@@ -94,9 +85,7 @@ class ExpressionStatement extends Statement {
   ExpressionStatement(this.expression, Token token) : super(token);
 
   @override
-  String str() {
-    return expression!.str();
-  }
+  String str() => expression!.str();
 }
 
 class Integer extends Expression {
@@ -146,10 +135,7 @@ class Block extends Statement {
   @override
   String str() {
     var out = <String>[];
-    for (var statement in statements) {
-      out.add(statement.str());
-    }
-
+    statements.forEach((statement) => out.add(statement.str()));
     return out.join(' ');
   }
 }
@@ -183,13 +169,9 @@ class FunctionExpression extends Expression {
 
   @override
   String str() {
-    var paramList = <String>[];
-    for (var param in parameters!) {
-      paramList.add(param.str());
-    }
-
-    var params = paramList.join(' ');
-    return '${tokenLitertal()}($params) ${body!.str()}';
+    var params = <String>[];
+    parameters!.forEach((param) => params.add(param.str()));
+    return '${tokenLitertal()}(${params.join(', ')}) ${body!.str()}';
   }
 }
 
@@ -202,10 +184,7 @@ class Call extends Expression {
   @override
   String str() {
     var args = <String>[];
-    for (var argument in arguments) {
-      args.add(argument.str());
-    }
-
+    arguments.forEach((arg) => args.add(arg.str()));
     return '${function.str()}(${args.join(', ')})';
   }
 }
@@ -251,10 +230,7 @@ class ArrayExpression extends Expression {
   @override
   String str() {
     var out = <String>[];
-    for(var value in values) {
-      out.add(value.str());
-    } 
-
+    values.forEach((val) => out.add(val.str()));
     return '[${out.join(', ')}]';
   }
 }

@@ -136,10 +136,7 @@ Object unwrapReturnValue(Object obj) {
 
 Object evaluateArray(ArrayExpression arr, Enviroment env) {
   var list = Array(<Object>[]);
-  for (var val in arr.values) {
-    list.values.add(evaluate(val, env));
-  }
-
+  arr.values.forEach((val) => list.values.add(evaluate(val, env)));
   return list;
 }
 

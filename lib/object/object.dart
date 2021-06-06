@@ -85,10 +85,7 @@ class Def extends Object {
   @override
   String inspect() {
     var args = <String>[];
-    for (var param in parameters) {
-      args.add(param.str());
-    }
-
+    parameters.forEach((param) => args.add(param.str()));
     return 'def|${args.join(", ")}| {\n ${body.str()} \n}';
   }
 
@@ -154,10 +151,7 @@ class Array extends Object {
   @override
   String inspect() {
     var buff = <String>[];
-    for (var val in values) {
-      buff.add(val.inspect());
-    }
-
+    values.forEach((val) => buff.add(val.inspect()));
     return '[${buff.join(", ")}]';
   }
 
