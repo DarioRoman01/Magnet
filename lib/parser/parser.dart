@@ -410,7 +410,7 @@ class Parser {
 
     var leftExpression = prefixFn();
     assert(currentToken != null);
-    while (!(peekToken?.tokenType == TokenType.SEMICOLON)) {
+    while (!(peekToken?.tokenType == TokenType.SEMICOLON) && precedence.index < peekPrecedence().index) {
 
       var infixFn = infixFns[currentToken?.tokenType];
       if (infixFn == null) {
@@ -423,6 +423,16 @@ class Parser {
     }
 
     return leftExpression;
+  }
+
+  Precedence peekPrecedence() {
+    assert(currentToken != null);
+    var precedence = Precedences[peekToken?.tokenType];
+    if (precedence == null) {
+      return Precedence.LOWEST;
+    }
+
+    return precedence;
   }
 
   Identifier parseIdentifier() {

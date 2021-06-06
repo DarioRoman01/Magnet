@@ -89,7 +89,7 @@ class Def extends Object {
       args.add(param.str());
     }
 
-    return 'def|${args.join(" ")}| {\n ${body.str()} \n}';
+    return 'def|${args.join(", ")}| {\n ${body.str()} \n}';
   }
 
   @override
