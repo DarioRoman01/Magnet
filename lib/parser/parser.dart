@@ -103,7 +103,7 @@ class Parser {
   List<Expression>? parseCallArguemts() {
     assert(currentToken != null);
     var args = <Expression>[];
-    if (peekToken?.tokenType == TokenType.BAR || peekToken?.tokenType == TokenType.RPAREN) {
+    if (peekToken?.tokenType == TokenType.LPAREN) {
       advanceTokens();
       return args;
     }
@@ -117,14 +117,13 @@ class Parser {
     while (peekToken?.tokenType == TokenType.COMMA) {
       advanceTokens();
       advanceTokens();
-
       expression = parseExpression(Precedence.LOWEST);
       if (expression != null) {
         args.add(expression);
       }
     }
-
-    if (!expectedToken(TokenType.BAR) && !expectedToken(TokenType.RPAREN)) {
+    
+    if (!expectedToken(TokenType.RPAREN)) {
       return null;
     }
 
@@ -208,7 +207,7 @@ class Parser {
   Expression? parseFunction() {
     assert(currentToken != null);
     var func = FunctionExpression(null, null, currentToken!);
-    if (!expectedToken(TokenType.BAR)) {
+    if (!expectedToken(TokenType.LPAREN)) {
       return null;
     }
 
@@ -228,7 +227,7 @@ class Parser {
   List<Identifier> parseFunctionParameters() {
     assert(peekToken != null);
     var params = <Identifier>[];
-    if (peekToken?.tokenType == TokenType.BAR) {
+    if (peekToken?.tokenType == TokenType.RPAREN) {
       advanceTokens();
       return params;
     }
@@ -244,7 +243,7 @@ class Parser {
       params.add(identifier);
     }
 
-    if (!expectedToken(TokenType.BAR)) {
+    if (!expectedToken(TokenType.RPAREN)) {
       return <Identifier>[];
     }
 
