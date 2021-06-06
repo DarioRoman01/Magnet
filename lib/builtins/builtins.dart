@@ -1,22 +1,4 @@
 import 'package:Magnet/object/object.dart';
-// func Longitud(args ...Object) Object {
-// 	if len(args) != 1 {
-// 		return &Error{Message: wrongNumberofArgs(len(args), 1)}
-// 	}
-
-// 	switch arg := args[0].(type) {
-
-// 	case *String:
-// 		return &Number{Value: utf8.RuneCountInString(arg.Value)}
-
-// 	case *List:
-// 		return &Number{Value: len(arg.Values)}
-
-// 	default:
-// 		return &Error{Message: unsoportedArgumentType("longitud", types[args[0].Type()])}
-
-// 	}
-// }
 
 Object length(List<Object> args) {
   if (args.length > 1 || args.isEmpty) {
