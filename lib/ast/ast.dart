@@ -12,14 +12,11 @@ class Statement extends ASTNode {
 
   @override
   String str() {
-    // TODO: implement str
     throw UnimplementedError();
   }
 
   @override
-  String tokenLitertal() {
-    return token.literal;
-  }
+  String tokenLitertal() => token.literal;
 }
 
 class Expression extends ASTNode {
@@ -29,7 +26,6 @@ class Expression extends ASTNode {
 
   @override
   String str() {
-    // TODO: implement str
     throw UnimplementedError();
   }
 
@@ -70,9 +66,7 @@ class Identifier extends Expression {
   Identifier(this.value, Token token) : super(token);
 
   @override
-  String str() {
-    return value!;
-  }
+  String str() => value!;
 }
 
 class LetStatement extends Statement {
@@ -82,9 +76,7 @@ class LetStatement extends Statement {
   LetStatement(this.name, this.value, Token token) : super(token);
 
   @override
-  String str() {
-    return '@${name?.str()} = ${value?.str()}';
-  }
+  String str() => '@${name?.str()} = ${value?.str()}';
 }
 
 class ReturnStatement extends Statement {
@@ -93,9 +85,7 @@ class ReturnStatement extends Statement {
   ReturnStatement(this.returnValue, Token token) : super(token);
 
   @override
-  String str() {
-    return '$tokenLitertal() ${returnValue?.str()}';
-  }
+  String str() => '$tokenLitertal() ${returnValue?.str()}';
 }
 
 class ExpressionStatement extends Statement {
@@ -115,9 +105,7 @@ class Integer extends Expression {
   Integer(this.value, Token token) : super(token);
 
   @override
-  String str() {
-    return '$value';
-  }
+  String str() => '$value';
 }
 
 class Prefix extends Expression {
@@ -127,9 +115,7 @@ class Prefix extends Expression {
   Prefix(this.operattor, this.rigth, Token token) : super(token);
 
   @override
-  String str() {
-    return '($operattor ${rigth!.str()})';
-  }
+  String str() => '($operattor ${rigth!.str()})';
 }
 
 class Infix extends Expression {
@@ -140,9 +126,7 @@ class Infix extends Expression {
   Infix(this.rigth, this.operattor, this.left, Token token) : super(token);
 
   @override
-  String str() {
-    return '(${left!.str()} $operattor ${rigth!.str()})';
-  }
+  String str() => '(${left!.str()} $operattor ${rigth!.str()})';
 }
 
 class Boolean extends Expression {
@@ -151,9 +135,7 @@ class Boolean extends Expression {
   Boolean(this.value, Token token) : super(token);
 
   @override
-  String str() {
-    return tokenLitertal();
-  }
+  String str() => tokenLitertal();
 }
 
 class Block extends Statement {
@@ -234,9 +216,7 @@ class StringLiteral extends Expression {
   StringLiteral(this.value, Token token) : super(token);
 
   @override
-  String str() {
-    return value;
-  }
+  String str() => value;
 }
 
 class ForLoop extends Expression {

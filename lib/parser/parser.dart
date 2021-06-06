@@ -126,9 +126,7 @@ class Parser {
     return args;
   }
 
-  List<String> errors() {
-    return _errors;
-  }
+  List<String> get errors =>  _errors;
 
   Statement? parseStatement() {
     if (currentToken?.tokenType == TokenType.LET) {

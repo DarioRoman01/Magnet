@@ -24,14 +24,10 @@ class Number extends Object {
   Number(this.value);
 
   @override
-  ObjectType type() {
-    return ObjectType.INTEGERS;
-  }
+  ObjectType type() => ObjectType.INTEGERS;
 
   @override
-  String inspect() {
-    return '$value';
-  }
+  String inspect() => '$value';
 }
 
 class Bool extends Object {
@@ -40,26 +36,18 @@ class Bool extends Object {
   Bool(this.value);
 
   @override
-  String inspect() {
-    return '$value';
-  }
+  String inspect() => '$value';
 
   @override
-  ObjectType type() {
-    return ObjectType.BOOLEAN;
-  }
+  ObjectType type() => ObjectType.BOOLEAN;
 }
 
 class None extends Object {
   @override
-  String inspect() {
-    return 'none';
-  }
+  String inspect() => 'none';
 
   @override
-  ObjectType type() {
-    return ObjectType.NULL;
-  }
+  ObjectType type() => ObjectType.NULL;
 }
 
 class Return extends Object {
@@ -68,14 +56,10 @@ class Return extends Object {
   Return(this.value);
 
   @override
-  String inspect() {
-    return value.inspect();
-  }
+  String inspect() => value.inspect();
 
   @override
-  ObjectType type() {
-    return ObjectType.RETURNTYPE;
-  }
+  ObjectType type() => ObjectType.RETURNTYPE;
 }
 
 class Error extends Object {
@@ -84,14 +68,11 @@ class Error extends Object {
   Error(this.message);
 
   @override
-  String inspect() {
-    return 'Error: $message';
-  }
+  String inspect() => 'Error: $message';
 
   @override
-  ObjectType type() {
-    return ObjectType.ERROR;
-  }
+  ObjectType type() => ObjectType.ERROR;
+  
 }
 
 class Def extends Object {
@@ -112,9 +93,7 @@ class Def extends Object {
   }
 
   @override
-  ObjectType type() {
-    return ObjectType.DEF;
-  }
+  ObjectType type() => ObjectType.DEF;
 }
 
 class Str extends Object {
@@ -123,14 +102,10 @@ class Str extends Object {
   Str(this.value);
 
   @override
-  String inspect() {
-    return value;
-  }
+  String inspect() => value;
 
   @override
-  ObjectType type() {
-    return ObjectType.STRINGTYPE;
-  }
+  ObjectType type() => ObjectType.STRINGTYPE; 
 }
 
 typedef BuiltinFn = Object Function(List<Object> args);
@@ -141,14 +116,10 @@ class BuiltIn extends Object {
   BuiltIn(this.fn);
 
   @override
-  String inspect() {
-    return 'builtin function';
-  }
+  String inspect() => 'builtin function';
 
   @override
-  ObjectType type() {
-    return ObjectType.BUILTIN;
-  }
+  ObjectType type() => ObjectType.BUILTIN;
 }
 
 class Enviroment {
@@ -170,13 +141,9 @@ class Enviroment {
     return val;
   }
 
-  void setItem(String key, Object val) {
-    store[key] = val;
-  }
+  void setItem(String key, Object val) => store[key] = val;
 
-  void delItem(String key) {
-    store.remove(key);
-  }
+  void delItem(String key) => store.remove(key); 
 }
 
 class Array extends Object {
@@ -187,7 +154,6 @@ class Array extends Object {
   @override
   String inspect() {
     var buff = <String>[];
-
     for (var val in values) {
       buff.add(val.inspect());
     }
@@ -196,7 +162,5 @@ class Array extends Object {
   }
 
   @override
-  ObjectType type() {
-    return ObjectType.LIST;
-  }
+  ObjectType type() =>  ObjectType.LIST;
 }

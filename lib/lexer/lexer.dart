@@ -128,10 +128,7 @@ class Lexer {
     return exp.hasMatch(character);
   }
 
-  bool isNumber(String char) {
-    var exp = RegExp(r'^\d$');
-    return exp.hasMatch(character);
-  }
+  bool isNumber(String char) => RegExp(r'^\d$').hasMatch(character);
 
   void readCharacter() {
     if (read_position > source.length) {
