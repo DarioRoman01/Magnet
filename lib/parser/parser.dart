@@ -103,7 +103,7 @@ class Parser {
   List<Expression>? parseCallArguemts() {
     assert(currentToken != null);
     var args = <Expression>[];
-    if (peekToken?.tokenType == TokenType.BAR) {
+    if (peekToken?.tokenType == TokenType.BAR || peekToken?.tokenType == TokenType.RPAREN) {
       advanceTokens();
       return args;
     }
@@ -115,13 +115,16 @@ class Parser {
     }
 
     while (peekToken?.tokenType == TokenType.COMMA) {
+      advanceTokens();
+      advanceTokens();
+
       expression = parseExpression(Precedence.LOWEST);
       if (expression != null) {
         args.add(expression);
       }
     }
 
-    if (!expectedToken(TokenType.BAR)) {
+    if (!expectedToken(TokenType.BAR) && !expectedToken(TokenType.RPAREN)) {
       return null;
     }
 
@@ -210,12 +213,9 @@ class Parser {
     }
 
     func.parameters = parseFunctionParameters();
-
     if (!expectedToken(TokenType.ARROW)) {
       return null;
     }
-
-    advanceTokens();
 
     if (!expectedToken(TokenType.LBRACE)) {
       return null;
@@ -279,7 +279,7 @@ class Parser {
     advanceTokens();
 
     while (
-      !(currentToken?.tokenType == TokenType.LBRACE) && 
+      !(currentToken?.tokenType == TokenType.RBRACE) && 
       !(currentToken?.tokenType == TokenType.EOF)) {
         var statement = parseStatement();
         if (statement != null) {
@@ -413,8 +413,7 @@ class Parser {
     var leftExpression = prefixFn();
     assert(currentToken != null);
     while (!(peekToken?.tokenType == TokenType.SEMICOLON) && precedence.index < peekPrecedence().index) {
-
-      var infixFn = infixFns[currentToken?.tokenType];
+      var infixFn = infixFns[peekToken?.tokenType];
       if (infixFn == null) {
         return leftExpression;
       }
@@ -470,6 +469,7 @@ class Parser {
       TokenType.LT: parseInfixExpression,
       TokenType.GT: parseInfixExpression,
       TokenType.LPAREN: parseCall,
+      TokenType.BAR: parseCall,
       TokenType.MOD: parseInfixExpression,
       TokenType.AND: parseInfixExpression,
       TokenType.OR: parseInfixExpression,

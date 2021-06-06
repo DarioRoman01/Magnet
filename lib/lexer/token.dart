@@ -58,7 +58,7 @@ class Token {
 TokenType lookUpTokenType(String literal) {
   var keywords = {
     'false': TokenType.FALSE,
-    'func': TokenType.FUNCTION,
+    'def': TokenType.FUNCTION,
     'return': TokenType.RETURN,
     'if': TokenType.IF,
     'else': TokenType.ELSE,

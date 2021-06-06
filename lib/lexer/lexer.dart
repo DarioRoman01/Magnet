@@ -61,6 +61,9 @@ class Lexer {
     } else if (RegExp(r'^%$').hasMatch(character)) {
       token = Token(TokenType.MOD, character);
 
+    } else if (RegExp(r'^,$').hasMatch(character)) {
+      token = Token(TokenType.COMMA, character);
+
     } else if (RegExp(r'^-$').hasMatch(character)) {
       token = Token(TokenType.MINUS, character);
 
@@ -97,7 +100,7 @@ class Lexer {
         token = Token(TokenType.LT, character);
       }
 
-    } else if (RegExp(r'^|$').hasMatch(character)) {
+    } else if (RegExp(r'^\|$').hasMatch(character)) {
       if (peekCharacter() == '|') {
         token = makeTwoCharacterToken(TokenType.OR);
       } else {

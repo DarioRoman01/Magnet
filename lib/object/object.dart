@@ -72,7 +72,6 @@ class Error extends Object {
 
   @override
   ObjectType type() => ObjectType.ERROR;
-  
 }
 
 class Def extends Object {
@@ -102,7 +101,7 @@ class Str extends Object {
   String inspect() => value;
 
   @override
-  ObjectType type() => ObjectType.STRINGTYPE; 
+  ObjectType type() => ObjectType.STRINGTYPE;
 }
 
 typedef BuiltinFn = Object Function(List<Object> args);
@@ -140,7 +139,7 @@ class Enviroment {
 
   void setItem(String key, Object val) => store[key] = val;
 
-  void delItem(String key) => store.remove(key); 
+  void delItem(String key) => store.remove(key);
 }
 
 class Array extends Object {
@@ -156,5 +155,5 @@ class Array extends Object {
   }
 
   @override
-  ObjectType type() =>  ObjectType.LIST;
+  ObjectType type() => ObjectType.LIST;
 }
