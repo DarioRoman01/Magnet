@@ -97,8 +97,9 @@ class Error extends Object {
 class Def extends Object {
   List<Identifier> parameters;
   Block body;
+  Enviroment env;
 
-  Def(this.parameters, this.body);
+  Def(this.parameters, this.body, this.env);
 
   @override
   String inspect() {

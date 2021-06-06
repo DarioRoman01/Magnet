@@ -45,7 +45,13 @@ class Parser {
   late PrefixParseFns prefixFns;
   late InfixParseFns infixFns;
 
-  Parser(this.lexer);
+  Parser(this.lexer) {
+    _errors = <String>[];
+    prefixFns = registerPrefixFns();
+    infixFns = registerInfixFns();
+    advanceTokens();
+    advanceTokens();
+  }
 
   void advanceTokens() {
     currentToken = peekToken;
