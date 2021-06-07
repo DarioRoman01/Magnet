@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:Magnet/evaluator/evaluator.dart';
 import 'package:Magnet/object/object.dart';
 
 Object length(List<Object> args) {
@@ -18,6 +21,97 @@ Object length(List<Object> args) {
 }
 
 
+Object show(List<Object> args) {
+  var buff = StringBuffer();
+
+  for (final arg in args) {
+    switch (arg.runtimeType) {
+      case Str:
+        buff.write(arg.inspect());
+        break;
+
+      case Number:
+        buff.write(arg.inspect());
+        break;
+
+      case List:
+        buff.write(arg.inspect());
+        break;
+
+      case Bool:
+        buff.write(arg.inspect());
+        break;
+      
+      default:
+        return unsoportedArgumentType(arg.type().toString());
+    }
+  }
+
+  print(buff.toString());
+  return SingletonNull;
+}
+
+Object input(List<Object> args) {
+  if (args.length > 1) {
+    return wronNumberOfArgs(1, args.length);
+  }
+
+  if (args.isEmpty) {
+    var str = stdin.readLineSync()!;
+    return Str(str);
+  }
+
+  if (args[0].runtimeType == Str) {
+    stdout.write(args[0].inspect());
+    var str = stdin.readLineSync()!;
+    return Str(str);
+  }
+
+  return unsoportedArgumentType(args[0].type().toString());
+}
+
+Object castInt(List<Object> args) {
+  if (args.isEmpty || args.length > 1) {
+    return wronNumberOfArgs(1, args.length);
+  }
+
+  if (args[0].runtimeType == Str) {
+    return toInt((args[0] as Str).value);
+  }
+
+  return unsoportedArgumentType(args[0].type().toString());
+}
+
+Object castString(List<Object> args) {
+  if (args.isEmpty || args.length > 1) {
+    return wronNumberOfArgs(1, args.length);
+  }
+
+  if (args[0].runtimeType == Number) {
+    final number = args[0] as Number;
+    return Str(number.value.toString());
+  }
+
+  return unsoportedArgumentType(args[0].type().toString());
+}
+
+Object toInt(String value) {
+  var number = int.tryParse(value);
+  if (number == null) {
+    return Error('Unable to parse int: $value');
+  }
+
+  return Number(number);
+}
+
+Object objType(List<Object> args) {
+  if (args.isEmpty || args.length > 1) {
+    return wronNumberOfArgs(1, args.length);
+  }
+
+  return Str(args[0].type().toString());
+}
+
 Error wronNumberOfArgs(int expected, found) {
   return Error('Expected $expected args but got $found');
 }
@@ -28,4 +122,8 @@ Error unsoportedArgumentType(String type) {
 
 final Builtins = {
   'len': BuiltIn(length),
+  'int': BuiltIn(castInt),
+  'string': BuiltIn(castString),
+  'input': BuiltIn(input),
+  'show': BuiltIn(show),
 };
