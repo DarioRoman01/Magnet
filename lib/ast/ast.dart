@@ -43,11 +43,7 @@ class Program extends ASTNode {
 
   @override
   String tokenLitertal() {
-    if (statements.isNotEmpty) {
-      return statements[0].token.literal;
-    }
-
-    return '';
+    return statements.isNotEmpty ? statements.first.token.literal : '';
   }
 }
 

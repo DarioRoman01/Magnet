@@ -144,11 +144,7 @@ Object evaluateIdentifier(Identifier node, Enviroment env) {
   var value = env.getItem(node.value!);
   if (value == null) {
     var builtin = Builtins[node.value];
-    if (builtin == null) {
-      return unkownIdentifier(node.value!);
-    }
-
-    return builtin;
+    return builtin ?? unkownIdentifier(node.value!);
   }
 
   return value;
