@@ -230,3 +230,15 @@ class ArrayExpression extends Expression {
     return '[${out.join(', ')}]';
   }
 }
+
+class CallList extends Expression {
+  Expression listIdent;
+  Expression? index; 
+
+  CallList(this.listIdent, this.index, Token token) : super(token);
+
+  @override
+  String str() {
+    return '${listIdent.str()}kdjfkdjf[${index!.str()}]';    
+  }
+}

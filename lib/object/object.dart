@@ -129,10 +129,7 @@ class Enviroment {
   Object? getItem(String key) {
     var val = store[key];
     if (val == null) {
-      if (outer != null) {
-        return outer!.getItem(key);
-      }
-      return null;
+      return outer != null ? outer!.getItem(key) : null;
     }
     return val;
   }

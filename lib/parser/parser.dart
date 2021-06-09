@@ -33,6 +33,7 @@ const Precedences = {
   TokenType.TIMES: Precedence.PRODUCT,
   TokenType.MOD: Precedence.PRODUCT,
   TokenType.LPAREN: Precedence.CALL,
+  TokenType.LBRACKET: Precedence.CALL,
   TokenType.BAR: Precedence.CALL,
   TokenType.OR: Precedence.ANDOR,
 };
@@ -250,6 +251,18 @@ class Parser {
     return params;
   }
 
+  Expression? parseCallList(Expression listIdent) {
+    assert(currentToken != null);
+    var callList = CallList(listIdent, null, currentToken!);
+    advanceTokens();
+    callList.index = parseExpression(Precedence.LOWEST);
+    if (!expectedToken(TokenType.RBRACKET)) {
+      return null;
+    }
+
+    return callList;
+  }
+
   Statement? parseLetStatement() {
     assert(currentToken != null);
     var statement = LetStatement(null, null, currentToken!);
@@ -294,10 +307,6 @@ class Parser {
   Expression? parseArray() {
     assert(currentToken != null);
     var arr = ArrayExpression(<Expression>[], currentToken!);
-    if (!expectedToken(TokenType.LBRACKET)) {
-      return null;
-    }
-
     arr.values = parseArrayValues()!;
     return arr;
   }
@@ -469,6 +478,7 @@ class Parser {
       TokenType.GT: parseInfixExpression,
       TokenType.LPAREN: parseCall,
       TokenType.BAR: parseCall,
+      TokenType.LBRACKET: parseCallList,
       TokenType.MOD: parseInfixExpression,
       TokenType.AND: parseInfixExpression,
       TokenType.OR: parseInfixExpression,
@@ -490,7 +500,7 @@ class Parser {
       TokenType.NOT: parsePrefixExpression,
       TokenType.TRUE: parseBoolean,
       TokenType.STRING: parseStringLiteral,
-      TokenType.DATASTRCUT: parseArray,
+      TokenType.LBRACKET: parseArray,
     };
 
     return prefixFns;

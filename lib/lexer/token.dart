@@ -73,9 +73,5 @@ TokenType lookUpTokenType(String literal) {
   };
 
   var type = keywords[literal];
-  if (type == null) {
-    return TokenType.IDENT;
-  }
-
-  return type;
+  return type ?? TokenType.IDENT;
 }

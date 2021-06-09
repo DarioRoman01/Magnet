@@ -64,6 +64,12 @@ Object evaluate(ASTNode node, Enviroment env) {
       return SingletonNull;
     }
 
+    case CallList: {
+      var call = node as CallList;
+      assert(call.index != null);
+      return evaluateCallList(call, env);
+    }
+
     case Identifier:
       return evaluateIdentifier(node as Identifier, env);
 
@@ -164,12 +170,29 @@ Object evaluateBLockStaments(Block block, Enviroment env) {
 
 List<Object> evaluateExpression(List<Expression> expressions, Enviroment env) {
   var result = <Object>[];
-  for (final expression in expressions) {
-    var evaluated = evaluate(expression, env);
-    result.add(evaluated);
+  expressions.forEach((exp) => result.add(evaluate(exp, env)));
+  return result;
+}
+
+Object evaluateCallList(CallList callList, Enviroment env) {
+  var evaluated = evaluate(callList.listIdent, env);
+  if (evaluated.runtimeType == Array) {
+    
+    var array = evaluated as Array;
+    evaluated = evaluate(callList.index!, env);
+    if (evaluated.runtimeType != Number) {
+      return Error('Index must be an integer');
+    }
+
+    var number = evaluated as Number;
+    if (number.value > array.values.length) {
+      return Error('index out of range');
+    }
+
+    return array.values.elementAt(number.value);
   }
 
-  return result;
+  return Error('no es una lista ${evaluated.inspect()}');
 }
 
 Object evaluateWhileloop(WhileLoop whileLoop, Enviroment env) {
@@ -182,7 +205,6 @@ Object evaluateWhileloop(WhileLoop whileLoop, Enviroment env) {
 
   evaluate(whileLoop.body!, env);
   return evaluate(whileLoop, env);
-
 }
 
 bool isTruthy(Object obj) {
