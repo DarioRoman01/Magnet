@@ -65,7 +65,6 @@ TokenType lookUpTokenType(String literal) {
     'true': TokenType.TRUE,
     'while': TokenType.WHILE,
     'for': TokenType.FOR,
-    'list': TokenType.DATASTRCUT,
     'int': TokenType.TYPENAME,
     'bool': TokenType.TYPENAME,
     'str': TokenType.TYPENAME,

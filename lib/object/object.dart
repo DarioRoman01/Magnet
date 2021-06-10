@@ -1,4 +1,5 @@
 import 'package:Magnet/ast/ast.dart';
+import 'package:Magnet/builtins/methods.dart';
 
 enum ObjectType {
   BOOLEAN,
@@ -11,6 +12,7 @@ enum ObjectType {
   RETURNTYPE,
   STRINGTYPE,
   LIST,
+  METHOD,
 }
 
 abstract class Object {
@@ -153,4 +155,17 @@ class Array extends Object {
 
   @override
   ObjectType type() => ObjectType.LIST;
+}
+
+class Method extends Object {
+  Object value;
+  Methods method;
+
+  Method(this.value, this.method);
+
+  @override
+  String inspect() => '${method.toString()}(${value.inspect()})';
+
+  @override
+  ObjectType type() => ObjectType.METHOD;
 }

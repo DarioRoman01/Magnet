@@ -242,3 +242,13 @@ class CallList extends Expression {
     return '${listIdent.str()}kdjfkdjf[${index!.str()}]';    
   }
 }
+
+class Reassigment extends Expression {
+  Expression identifier;
+  Expression? newVal;
+
+  Reassigment(Token token, this.identifier, this.newVal) : super(token);
+
+  @override
+  String str() => '${identifier.str()} = ${newVal!.str()}';    
+}

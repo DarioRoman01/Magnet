@@ -31,6 +31,7 @@ const Precedences = {
   TokenType.MINUS: Precedence.SUM,
   TokenType.DIVISION: Precedence.PRODUCT,
   TokenType.TIMES: Precedence.PRODUCT,
+  TokenType.ASSING: Precedence.ANDOR,
   TokenType.MOD: Precedence.PRODUCT,
   TokenType.LPAREN: Precedence.CALL,
   TokenType.LBRACKET: Precedence.CALL,
@@ -158,7 +159,7 @@ class Parser {
 
     return statemt;
   }
-
+  
   ExpressionStatement parseExpressionStatement() {
     assert(currentToken != null);
     var statement = ExpressionStatement(null, currentToken!);
@@ -263,10 +264,19 @@ class Parser {
     return callList;
   }
 
+  Expression? parseReassigment(Expression identifier) {
+    assert(currentToken != null);
+    var reassigment = Reassigment(currentToken!, identifier, null);
+    advanceTokens();
+    reassigment.newVal = parseExpression(Precedence.LOWEST);
+    return reassigment;
+  }
+
   Statement? parseLetStatement() {
     assert(currentToken != null);
     var statement = LetStatement(null, null, currentToken!);
     if (!expectedToken(TokenType.IDENT)) {
+      print(currentToken?.printToken());
       return null;
     }
 
@@ -478,6 +488,7 @@ class Parser {
       TokenType.GT: parseInfixExpression,
       TokenType.LPAREN: parseCall,
       TokenType.BAR: parseCall,
+      TokenType.ASSING: parseReassigment,
       TokenType.LBRACKET: parseCallList,
       TokenType.MOD: parseInfixExpression,
       TokenType.AND: parseInfixExpression,

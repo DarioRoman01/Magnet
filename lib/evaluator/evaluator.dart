@@ -78,6 +78,11 @@ Object evaluate(ASTNode node, Enviroment env) {
       assert(fn.body != null);
       return Def(fn.parameters!, fn.body!, env);
 
+    case Reassigment:
+      var res = node as Reassigment;
+      assert(res.newVal != null);
+      return evaluateReassigment(res, env);
+
     case ArrayExpression:
       return evaluateArray(node as ArrayExpression, env);
     
@@ -110,6 +115,22 @@ Object evaluateProgram(Program program, Enviroment env) {
   }
 
   return result!;
+}
+
+Object evaluateReassigment(Reassigment res, Enviroment env) {
+  if (res.identifier.runtimeType == Identifier) {
+    var ident = res.identifier as Identifier;
+    var val = env.store[ident.value];
+
+    if (val != null) {
+      env.store[ident.value!] = evaluate(res.newVal!, env);
+      return SingletonNull;
+    }
+
+    return unkownIdentifier(ident.value!);
+  }
+
+  return unkownIdentifier(res.identifier.str());
 }
 
 Object applyFunction(Object fn, List<Object> args) {
@@ -386,10 +407,6 @@ Error unkownInfixExpression(String left, operate, rigth) {
   return Error('unkown operator: $left $operate $rigth');
 }
 
-Error notAFunction(String ident) {
-  return Error('Not a function: $ident');
-}
+Error notAFunction(String ident) => Error('Not a function: $ident');
 
-Error unkownIdentifier(String ident) {
-  return Error('unkown identifier: $ident');
-}
+Error unkownIdentifier(String ident) => Error('unkown identifier: $ident');

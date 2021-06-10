@@ -31,7 +31,7 @@ void startRpl() {
     }
 
     var evaluated = evaluate(program, env);
-    if (scanned.last.contains('escribir')) {
+    if (scanned.last.contains('show')) {
       scanned.removeLast();
     }
 
