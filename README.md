@@ -2,14 +2,14 @@
 Magnet is high level programming lenguage inspired in rust but without static typing.
 
 syntax examples:
-```rust
+```dart
 @a = 3;
 @b = 5;
 @c = a + b;
 show(c); // prints 8
 ```
 
-```rust
+```dart
 @findMax = f(array) => {
     @max = 0;
     for(i in list) {
@@ -26,7 +26,7 @@ show(c); // prints 8
 show(result);
 ```
 
-```rust
+```dart
 @list = [2,3,4];
 list::append(10); // add 10 to the list
 
@@ -43,7 +43,7 @@ list::max();
 list::min();
 ```
 
-```rust
+```dart
 @ages = map{
     "jason": 23,
     "trevor": 30,
