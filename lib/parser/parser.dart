@@ -234,6 +234,22 @@ class Parser {
     return func;
   }
 
+  Expression? parseInExpression() {
+    var inExp = InExpression(currentToken!, null, null);
+    if (!expectedToken(TokenType.IDENT)) {
+      return null;
+    }
+
+    inExp.ident = parseIdentifier();
+    if (!expectedToken(TokenType.IN)) {
+      return null;
+    }
+
+    advanceTokens();
+    inExp.range = parseExpression(Precedence.LOWEST);
+    return inExp;
+  }
+
   List<Identifier> parseFunctionParameters() {
     assert(peekToken != null);
     var params = <Identifier>[];
@@ -301,6 +317,26 @@ class Parser {
     }
 
     return statement;
+  }
+
+  Expression? parseForLoop() {
+    var forLoop = ForLoop(null, null, currentToken!);
+    if (!expectedToken(TokenType.LPAREN)) {
+      return null;
+    }
+
+    advanceTokens();
+    forLoop.condition = parseInExpression();
+    if (!expectedToken(TokenType.RPAREN)) {
+		  return null;
+	  }
+
+	  if (!expectedToken(TokenType.LBRACE)) {
+		  return null;
+	  }
+
+    forLoop.body = parseBlock();
+    return forLoop;
   }
 
   Block parseBlock() {

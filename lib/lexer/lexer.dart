@@ -52,8 +52,6 @@ class Lexer {
     } else if (RegExp(r'^:$').hasMatch(character)) {
       if (peekCharacter() == ':') {
         token = makeTwoCharacterToken(TokenType.DCOLON);
-      } else if (peekCharacter() == '=') {
-        token = makeTwoCharacterToken(TokenType.COLOASS);
       } else {
         token = Token(TokenType.COLON, character);
       }

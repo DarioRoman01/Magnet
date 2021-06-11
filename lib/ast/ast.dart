@@ -188,14 +188,14 @@ class StringLiteral extends Expression {
 }
 
 class ForLoop extends Expression {
-  Expression condition;
-  Block body;
+  Expression? condition;
+  Block? body;
 
   ForLoop(this.condition, this.body, Token token) : super(token);
 
   @override
   String str() {
-    return '${tokenLitertal()} (${condition.str()}) ${body.str()}';
+    return '${tokenLitertal()} (${condition!.str()}) ${body!.str()}';
   }
 }
 
@@ -251,4 +251,14 @@ class MethodExpression extends Expression {
 
   @override
   String str() => '${obj.str()}::${method!.str()}';
+}
+
+class InExpression extends Expression {
+  Expression? ident;
+  Expression? range;
+
+  InExpression(Token token, this.ident, this.range) : super(token);
+
+  @override
+  String str() => '${ident!.str()} in ${range!.str()}';
 }

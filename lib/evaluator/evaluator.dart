@@ -267,6 +267,41 @@ Object evaluateWhileloop(WhileLoop whileLoop, Enviroment env) {
   return evaluate(whileLoop, env);
 }
 
+Object evuateForLoop(ForLoop loop, Enviroment env) {
+  var evaluated = evaluate(loop.condition!, env);
+  try {
+    var iter = evaluated as Iterator;
+    var val = (loop.condition as InExpression).ident as Identifier;
+    while (iter.next() != null) {
+      evaluated = evaluate(loop.body!, env);
+      if (evaluated.runtimeType == Return) return evaluated as Return;
+
+      env.store[val.value!] = iter.current;
+    }
+
+    return SingletonNull;
+  } 
+
+  catch(e) {
+    if (evaluated.runtimeType == Error) return evaluated as Error;
+    return Error('error while evaluating for loop');
+  }
+}
+
+Object evaluateInExpression(InExpression inExp, Enviroment env) {
+  var evaluated = evaluate(inExp.range!, env);
+  try {
+    var array = evaluated as Array;
+    var val = inExp.ident as Identifier;
+    var iter = Iterator(array.values.first, array.values);
+    env.setItem(val.value!, iter.values[0]);
+    return iter;
+  }
+  catch (e) {
+    return Error('Invalid Expression in for loop');
+  }
+}
+
 bool isTruthy(Object obj) {
   if (obj == SingletonNull) {
     return false;

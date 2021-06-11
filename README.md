@@ -12,7 +12,7 @@ show(c); // prints 8
 ```dart
 @findMax = (array) => {
     @max = 0;
-    for(i in list) {
+    for(i in array) {
         if (i > max) {
             max = i
         }
@@ -23,7 +23,7 @@ show(c); // prints 8
 
 @list = [2,4,32,54,2];
 @result = findMax(list);
-show(result);
+show(result); // output: 54
 ```
 
 ```dart
@@ -32,15 +32,11 @@ list::append(10); // add 10 to the list
 
 show(list) // output: [2, 3, 4, 10]
 
-list::pop();
+list::pop(); // remove the last item
 
-list::removeAt(0);
+list::removeAt(0); // remove element by index
 
-list::contains(2);
-
-list::max();
-
-list::min();
+list::contains(2); // check if the array contains the given value
 ```
 
 ```dart

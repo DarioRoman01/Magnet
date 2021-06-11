@@ -164,3 +164,24 @@ class Method extends Object {
   @override
   ObjectType type() => ObjectType.METHOD;
 }
+
+class Iterator extends Object {
+  Object current;
+  List<Object> values;
+
+  Iterator(this.current, this.values);
+
+  Object? next() {
+    if (values.isEmpty) return null;
+    var val = current;
+    values.removeAt(0);
+    if (values.isNotEmpty) current = values[0];
+    return val;
+  }
+
+  @override
+  String inspect() => '[${values.map((e) => e.inspect()).join(', ')}]';
+
+  @override
+  ObjectType type() => ObjectType.ITER;
+}
