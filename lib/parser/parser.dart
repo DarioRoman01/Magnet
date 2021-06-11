@@ -223,7 +223,7 @@ class Parser {
     var func = FunctionExpression(null, null, currentToken!);
     func.parameters = parseFunctionParameters();
     if (!expectedToken(TokenType.ARROW)) {
-      throw UnimplementedError;
+      return null;
     }
 
     if (!expectedToken(TokenType.LBRACE)) {
@@ -325,7 +325,6 @@ class Parser {
       return null;
     }
 
-    advanceTokens();
     forLoop.condition = parseInExpression();
     if (!expectedToken(TokenType.RPAREN)) {
 		  return null;
@@ -551,6 +550,7 @@ class Parser {
       TokenType.TRUE: parseBoolean,
       TokenType.STRING: parseStringLiteral,
       TokenType.LBRACKET: parseArray,
+      TokenType.FOR: parseForLoop,
     };
 
     return prefixFns;

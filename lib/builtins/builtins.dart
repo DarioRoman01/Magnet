@@ -104,6 +104,41 @@ Object toInt(String value) {
   return Number(number);
 }
 
+Object range(List<Object> args) {
+  if (args.isEmpty || args.length > 2) {
+    return wronNumberOfArgs(2, args.length);
+  }
+
+  try {
+    var array = Array(<Object>[]);
+    if (args.length == 1) {
+      var val = args[0] as Number;
+      for(var i = 0; i < val.value; i++) {
+        array.values.add(Number(i));
+      }
+
+      return array;
+    }
+    else {
+      var init = args[0] as Number;
+      var fin = args[1] as Number;
+      if (init.value == fin.value || fin.value < init.value) {
+        return Error('Initial value and cannot be grater or equal to the end');
+      }
+
+      for(var i = init.value; i < fin.value; i++) {
+        array.values.add(Number(i));
+      }
+
+      return array;
+    }
+  } 
+
+  catch(e) {
+    return Error('index must be integers');
+  }
+}
+
 Object objType(List<Object> args) {
   if (args.isEmpty || args.length > 1) {
     return wronNumberOfArgs(1, args.length);
@@ -130,4 +165,5 @@ final Builtins = {
   'pop': BuiltIn(pop),
   'removeAt': BuiltIn(removeAt),
   'contains': BuiltIn(contains),
+  'range': BuiltIn(range),
 };

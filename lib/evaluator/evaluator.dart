@@ -31,6 +31,16 @@ Object evaluate(ASTNode node, Enviroment env) {
       assert(method.method != null);
       return evaluateMethod(method, env);
 
+    case InExpression:
+      var exp = node as InExpression;
+      assert(exp.ident != null && exp.range != null);
+      return evaluateInExpression(exp, env);
+
+    case ForLoop:
+      var loop = node as ForLoop;
+      assert(loop.condition != null);
+      return evuateForLoop(loop, env);
+
     case Prefix: {
       var prefix = node as Prefix;
       assert(prefix.rigth != null);
