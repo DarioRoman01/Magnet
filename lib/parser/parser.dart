@@ -206,6 +206,14 @@ class Parser {
     return infix;
   }
 
+  Expression? parseMethodExpression(Expression left) {
+    assert(currentToken != null);
+    var method = MethodExpression(currentToken!, left, null);
+    advanceTokens();
+    method.method = parseExpression(Precedence.LOWEST);
+    return method;
+  }
+
   Expression? parseFunction() {
     assert(currentToken != null);
     var func = FunctionExpression(null, null, currentToken!);
@@ -488,6 +496,7 @@ class Parser {
       TokenType.GT: parseInfixExpression,
       TokenType.LPAREN: parseCall,
       TokenType.BAR: parseCall,
+      TokenType.DCOLON: parseMethodExpression,
       TokenType.ASSING: parseReassigment,
       TokenType.LBRACKET: parseCallList,
       TokenType.MOD: parseInfixExpression,

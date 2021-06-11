@@ -7,6 +7,7 @@ enum TokenType {
   COLON,
   DATASTRCUT,
   DIVISION,
+  DCOLON,
   DOT,
   ELSE,
   EOF,

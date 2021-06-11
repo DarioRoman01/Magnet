@@ -50,7 +50,11 @@ class Lexer {
       token = Token(TokenType.RBRACE, character);
 
     } else if (RegExp(r'^:$').hasMatch(character)) {
-      token = Token(TokenType.COLON, character);
+      if (peekCharacter() == ':') {
+        token = makeTwoCharacterToken(TokenType.DCOLON);
+      } else {
+        token = Token(TokenType.COLON, character);
+      }
   
     } else if (RegExp(r'^\.$').hasMatch(character)) {
       token = Token(TokenType.DOT, character);

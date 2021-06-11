@@ -252,3 +252,13 @@ class Reassigment extends Expression {
   @override
   String str() => '${identifier.str()} = ${newVal!.str()}';    
 }
+
+class MethodExpression extends Expression {
+  Expression obj;
+  Expression? method;
+
+  MethodExpression(Token token, this.obj, this.method) : super(token);
+
+  @override
+  String str() => '${obj.str()}::${method!.str()}';
+}
