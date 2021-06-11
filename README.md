@@ -34,6 +34,8 @@ show(list); // output: [2, 3, 4, 10]
 
 list::pop(); // remove the last item
 
+list::forEach(v => show(v));
+
 list::removeAt(0); // remove element by index
 
 list::contains(2); // check if the array contains the given value
