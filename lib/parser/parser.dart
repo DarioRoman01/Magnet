@@ -37,6 +37,7 @@ const Precedences = {
   TokenType.LBRACKET: Precedence.CALL,
   TokenType.BAR: Precedence.CALL,
   TokenType.OR: Precedence.ANDOR,
+  TokenType.DCOLON: Precedence.CALL,
 };
 
 class Parser {
@@ -105,7 +106,7 @@ class Parser {
   List<Expression>? parseCallArguemts() {
     assert(currentToken != null);
     var args = <Expression>[];
-    if (peekToken?.tokenType == TokenType.LPAREN) {
+    if (peekToken?.tokenType == TokenType.RPAREN) {
       advanceTokens();
       return args;
     }
@@ -455,16 +456,10 @@ class Parser {
   Precedence peekPrecedence() {
     assert(currentToken != null);
     var precedence = Precedences[peekToken?.tokenType];
-    if (precedence == null) {
-      return Precedence.LOWEST;
-    }
-
-    return precedence;
+    return precedence ?? Precedence.LOWEST;
   }
 
-  Identifier parseIdentifier() {
-    return Identifier(currentToken?.literal, currentToken!);
-  }
+  Identifier parseIdentifier() => Identifier(currentToken?.literal, currentToken!);
 
   bool expectedToken(TokenType type) {
     if (peekToken?.tokenType == type) {

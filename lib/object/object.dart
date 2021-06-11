@@ -85,9 +85,8 @@ class Def extends Object {
 
   @override
   String inspect() {
-    var args = <String>[];
-    parameters.forEach((param) => args.add(param.str()));
-    return 'def|${args.join(", ")}| {\n ${body.str()} \n}';
+    var args = parameters.map((p) => p.str());
+    return 'def(${args.join(", ")}) => {\n ${body.str()} \n}';
   }
 
   @override
@@ -147,11 +146,7 @@ class Array extends Object {
   Array(this.values);
 
   @override
-  String inspect() {
-    var buff = <String>[];
-    values.forEach((val) => buff.add(val.inspect()));
-    return '[${buff.join(", ")}]';
-  }
+  String inspect() => '[${values.map((v) => v.inspect()).join(", ")}]';
 
   @override
   ObjectType type() => ObjectType.LIST;

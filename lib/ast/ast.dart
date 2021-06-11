@@ -36,8 +36,7 @@ class Program extends ASTNode {
 
   @override
   String str() {
-    var out = <String>[];
-    statements.forEach((e) => out.add(e.str()));
+    var out = statements.map((s) => s.str());
     return out.join('');
   }
 
@@ -129,11 +128,7 @@ class Block extends Statement {
   Block(this.statements, Token token) : super(token);
 
   @override
-  String str() {
-    var out = <String>[];
-    statements.forEach((statement) => out.add(statement.str()));
-    return out.join(' ');
-  }
+  String str() => statements.map((s) => s.str()).join(' ');
 }
 
 class IfExpression extends Expression {
@@ -165,8 +160,7 @@ class FunctionExpression extends Expression {
 
   @override
   String str() {
-    var params = <String>[];
-    parameters!.forEach((param) => params.add(param.str()));
+    final params = parameters!.map((p) => p.str());
     return '${tokenLitertal()}(${params.join(', ')}) ${body!.str()}';
   }
 }
@@ -179,8 +173,7 @@ class Call extends Expression {
 
   @override
   String str() {
-    var args = <String>[];
-    arguments.forEach((arg) => args.add(arg.str()));
+    final args = arguments.map((a) => a.str());
     return '${function.str()}(${args.join(', ')})';
   }
 }
@@ -225,8 +218,7 @@ class ArrayExpression extends Expression {
 
   @override
   String str() {
-    var out = <String>[];
-    values.forEach((val) => out.add(val.str()));
+    final out = values.map((v) => v.str());
     return '[${out.join(', ')}]';
   }
 }
@@ -238,9 +230,7 @@ class CallList extends Expression {
   CallList(this.listIdent, this.index, Token token) : super(token);
 
   @override
-  String str() {
-    return '${listIdent.str()}kdjfkdjf[${index!.str()}]';    
-  }
+  String str() =>'${listIdent.str()}[${index!.str()}]';    
 }
 
 class Reassigment extends Expression {

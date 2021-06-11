@@ -38,7 +38,7 @@ Object removeAt(List<Object> args) {
 }
 
 Object contains(List<Object> args) {
-  if (args.isNotEmpty || args.length > 1) {
+  if (args.isEmpty || args.length > 1) {
     return wronNumberOfArgs(1, args.length);
   }
 

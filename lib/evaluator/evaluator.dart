@@ -1,5 +1,6 @@
 import 'package:Magnet/ast/ast.dart';
 import 'package:Magnet/builtins/builtins.dart';
+import 'package:Magnet/builtins/methods.dart';
 import 'package:Magnet/object/object.dart';
 
 final SingletonTrue = Bool(true);
@@ -24,6 +25,11 @@ Object evaluate(ASTNode node, Enviroment env) {
     case Boolean:
       var val = node as Boolean;
       return toBooleanObject(val.value);
+
+    case MethodExpression:
+      var method = node as MethodExpression;
+      assert(method.method != null);
+      return evaluateMethod(method, env);
 
     case Prefix: {
       var prefix = node as Prefix;
@@ -187,6 +193,39 @@ Object evaluateBLockStaments(Block block, Enviroment env) {
   }
 
   return result!;
+}
+
+Object evaluateMethod(MethodExpression method, Enviroment env) {
+  var evaluated = evaluate(method.obj, env);
+  if (evaluated.runtimeType == Array) {
+    var array = evaluated as Array;
+
+    evaluated = evaluate(method.method!, env);
+    if (evaluated.runtimeType != Method) return Error('no such method');
+    var type = evaluated as Method;
+
+    switch (type.method) {
+      case Methods.APPEND:
+        array.values.add(type.value);
+        return SingletonNull;
+
+      case Methods.POP:
+        return array.values.removeLast();
+
+      case Methods.REMOVE: {
+        array.values.removeAt((type.value as Number).value);
+        return SingletonNull;
+      }
+      case Methods.CONTAINS:
+        var val = Bool(false);
+        array.values.forEach((v) => {
+          if (v.inspect() == type.value.inspect()) val.value = true
+        });
+        return val;
+    }
+  }
+
+  return Error('${evaluated.inspect()} has no methods');
 }
 
 List<Object> evaluateExpression(List<Expression> expressions, Enviroment env) {

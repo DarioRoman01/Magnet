@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:Magnet/builtins/methods.dart';
 import 'package:Magnet/evaluator/evaluator.dart';
 import 'package:Magnet/object/object.dart';
 
@@ -34,7 +34,7 @@ Object show(List<Object> args) {
         buff.write(arg.inspect());
         break;
 
-      case List:
+      case Array:
         buff.write(arg.inspect());
         break;
 
@@ -126,4 +126,8 @@ final Builtins = {
   'string': BuiltIn(castString),
   'input': BuiltIn(input),
   'show': BuiltIn(show),
+  'append': BuiltIn(append),
+  'pop': BuiltIn(pop),
+  'removeAt': BuiltIn(removeAt),
+  'contains': BuiltIn(contains),
 };
