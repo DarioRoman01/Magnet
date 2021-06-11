@@ -225,12 +225,12 @@ class ArrayExpression extends Expression {
 
 class CallList extends Expression {
   Expression listIdent;
-  Expression? index; 
+  Expression? index;
 
   CallList(this.listIdent, this.index, Token token) : super(token);
 
   @override
-  String str() =>'${listIdent.str()}[${index!.str()}]';    
+  String str() => '${listIdent.str()}[${index!.str()}]';
 }
 
 class Reassigment extends Expression {
@@ -240,7 +240,7 @@ class Reassigment extends Expression {
   Reassigment(Token token, this.identifier, this.newVal) : super(token);
 
   @override
-  String str() => '${identifier.str()} = ${newVal!.str()}';    
+  String str() => '${identifier.str()} = ${newVal!.str()}';
 }
 
 class MethodExpression extends Expression {
@@ -261,4 +261,23 @@ class InExpression extends Expression {
 
   @override
   String str() => '${ident!.str()} in ${range!.str()}';
+}
+
+class MapExpression extends Expression {
+  List<KeyValue> body;
+
+  MapExpression(Token token, this.body) : super(token);
+
+  @override
+  String str() => '${body.map((k) => k.str()).join(', ')}';
+}
+
+class KeyValue extends Expression {
+  Expression? key;
+  Expression? value;
+
+  KeyValue(Token token, this.key, this.value) : super(token);
+
+  @override
+  String str() => '{${key!.str()}: ${value!.str()}}';
 }

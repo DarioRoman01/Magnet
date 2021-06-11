@@ -80,6 +80,10 @@ Object evaluate(ASTNode node, Enviroment env) {
       return SingletonNull;
     }
 
+    case MapExpression:
+      var mapExp = node as MapExpression;
+      return evaluateMap(mapExp, env);
+
     case CallList: {
       var call = node as CallList;
       assert(call.index != null);
@@ -133,6 +137,21 @@ Object evaluateProgram(Program program, Enviroment env) {
   return result!;
 }
 
+Object evaluateMap(MapExpression mapExp, Enviroment env) {
+  var map = HashMap(<Object, Object>{});
+  for (final keyVal in mapExp.body) {
+    var key = evaluate(keyVal.key!, env);
+    var value = evaluate(keyVal.value!, env);
+    if (map.store.containsKey(key)) {
+      return Error('Duplicate keys are not allowed');
+    }
+
+    map.store[key] = value;
+  }
+
+  return map;
+}
+
 Object evaluateReassigment(Reassigment res, Enviroment env) {
   if (res.identifier.runtimeType == Identifier) {
     var ident = res.identifier as Identifier;
@@ -146,7 +165,44 @@ Object evaluateReassigment(Reassigment res, Enviroment env) {
     return unkownIdentifier(ident.value!);
   }
 
+  else if(res.identifier.runtimeType == CallList) {
+    var call = res.identifier as CallList;
+    var evaluated = evaluate(call.listIdent, env);
+
+    if (evaluated.runtimeType == Array) {
+      return evaluateListReassigment(call, evaluated as Array, res.newVal!, env);
+    }
+
+    else if(evaluated.runtimeType == HashMap) {
+      var map = evaluated as HashMap;
+      var key = evaluate(call.index!, env);
+      var value = evaluate(res.newVal!, env);
+      map.store[key] = value;
+      return SingletonNull;
+    }
+
+    return Error('${evaluated.inspect()} is not a list');
+  }
+
+
   return unkownIdentifier(res.identifier.str());
+}
+
+Object evaluateListReassigment(CallList call, Array arr, Expression newVal, Enviroment env) {
+  var index = evaluate(call.index!, env);
+  try {
+    var num = index as Number;
+    if (num.value >= arr.values.length) {
+      return Error('index out of range');
+    }
+
+    arr.values[num.value] = evaluate(newVal, env);
+    return SingletonNull;
+  }
+
+  catch(e) {
+    return Error('Index must be a number');
+  }
 }
 
 Object applyFunction(Object fn, List<Object> args) {
@@ -260,6 +316,14 @@ Object evaluateCallList(CallList callList, Enviroment env) {
     }
 
     return array.values.elementAt(number.value);
+  }
+
+  else if(evaluated.runtimeType == HashMap) {
+    var map = evaluated as HashMap;
+    var key = evaluate(callList.index!, env);
+    var value = map.store[key];
+    if (value == null) return SingletonNull;
+    return value;
   }
 
   return Error('no es una lista ${evaluated.inspect()}');

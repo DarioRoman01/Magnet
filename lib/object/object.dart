@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Magnet/ast/ast.dart';
 import 'package:Magnet/builtins/methods.dart';
 
@@ -13,6 +15,7 @@ enum ObjectType {
   STRINGTYPE,
   LIST,
   METHOD,
+  MAP,
 }
 
 abstract class Object {
@@ -184,4 +187,20 @@ class Iterator extends Object {
 
   @override
   ObjectType type() => ObjectType.ITER;
+}
+
+class HashMap extends Object {
+  Map<Object, Object> store;
+
+  HashMap(this.store);
+
+  @override
+  String inspect() {
+    final str = store.map((k, v) => MapEntry(k.inspect(), v.inspect()));
+    final out = JsonEncoder.withIndent('\n').convert(str);
+    return out;
+  }
+
+  @override
+  ObjectType type() => ObjectType.MAP;    
 }

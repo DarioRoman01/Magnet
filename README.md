@@ -30,7 +30,7 @@ show(result); // output: 54
 @list = [2,3,4];
 list::append(10); // add 10 to the list
 
-show(list) // output: [2, 3, 4, 10]
+show(list); // output: [2, 3, 4, 10]
 
 list::pop(); // remove the last item
 
@@ -40,16 +40,16 @@ list::contains(2); // check if the array contains the given value
 ```
 
 ```dart
-@ages = map{
+@ages = {
     "jason": 23,
     "trevor": 30,
     "peter": 34,
 }
 
-ages::get("peter");
-
+ages["trevor"]; // output: 30
+ages::containsKey("jason"); // output: true
+ages::containsVal(32) // output: False
 ages::keys();
-
 ages::values();
 ```
 

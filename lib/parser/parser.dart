@@ -187,6 +187,47 @@ class Parser {
       return expression;
   }
 
+  KeyValue? parseKeyValue() {
+    assert(currentToken != null);
+    var keyVal = KeyValue(currentToken!, null, null);
+    keyVal.key = parseExpression(Precedence.LOWEST);
+    if (!expectedToken(TokenType.COLON)) {
+      return null;
+    }
+
+    advanceTokens();
+    keyVal.value = parseExpression(Precedence.LOWEST);
+    return keyVal;
+  }
+
+  Expression? parseMapExpression() {
+    assert(currentToken != null);
+    var mapExp = MapExpression(currentToken!, <KeyValue>[]);
+    if (peekToken?.tokenType == TokenType.RBRACE) {
+      return mapExp;
+    }
+
+    advanceTokens();
+    var keyVal = parseKeyValue();
+    if (keyVal == null) {
+      return null;
+    }
+
+    mapExp.body.add(keyVal);
+    while (peekToken?.tokenType == TokenType.COMMA) {
+      advanceTokens();
+      advanceTokens();
+      keyVal = parseKeyValue();
+      if (keyVal == null) {
+        return null;
+      }
+      
+      mapExp.body.add(keyVal);
+    }
+
+    advanceTokens();
+    return mapExp;
+  }
 
   Expression parseStringLiteral() {
     assert(currentToken != null);
@@ -512,7 +553,7 @@ class Parser {
   }
 
   InfixParseFns registerInfixFns() {
-    var infixFns = {
+    final infixFns = {
       TokenType.PLUS: parseInfixExpression,
       TokenType.MINUS: parseInfixExpression,
       TokenType.DIVISION: parseInfixExpression,
@@ -536,7 +577,7 @@ class Parser {
   }
 
   PrefixParseFns registerPrefixFns() {
-    var prefixFns = {
+    final prefixFns = {
       TokenType.FALSE: parseBoolean,
       TokenType.FUNCTION: parseFunction,
       TokenType.WHILE: parseWhile,
@@ -551,6 +592,7 @@ class Parser {
       TokenType.STRING: parseStringLiteral,
       TokenType.LBRACKET: parseArray,
       TokenType.FOR: parseForLoop,
+      TokenType.LBRACE: parseMapExpression,
     };
 
     return prefixFns;
