@@ -42,6 +42,7 @@ const Precedences = {
 
 class Parser {
   Lexer lexer;
+  late Token? lastToken;
   late Token? currentToken;
   late Token? peekToken;
   late List<String> _errors;
@@ -52,6 +53,7 @@ class Parser {
     _errors = <String>[];
     prefixFns = registerPrefixFns();
     infixFns = registerInfixFns();
+    lastToken = null;
     currentToken = null;
     peekToken = null;
     advanceTokens();
@@ -59,6 +61,7 @@ class Parser {
   }
 
   void advanceTokens() {
+    lastToken = currentToken; 
     currentToken = peekToken;
     peekToken = lexer.nextToken();
   }
@@ -175,13 +178,13 @@ class Parser {
   }
 
   Expression? parseGroupExpression() {
-    advanceTokens();
-    var expression = parseExpression(Precedence.LOWEST);
-    if (!expectedToken(TokenType.RPAREN)) {
-      return null;
-    }
+      advanceTokens();
+      var expression = parseExpression(Precedence.LOWEST);
+      if (!expectedToken(TokenType.BAR)) {
+        return null;
+      }
 
-    return expression;
+      return expression;
   }
 
 
@@ -218,13 +221,9 @@ class Parser {
   Expression? parseFunction() {
     assert(currentToken != null);
     var func = FunctionExpression(null, null, currentToken!);
-    if (!expectedToken(TokenType.LPAREN)) {
-      return null;
-    }
-
     func.parameters = parseFunctionParameters();
     if (!expectedToken(TokenType.ARROW)) {
-      return null;
+      throw UnimplementedError;
     }
 
     if (!expectedToken(TokenType.LBRACE)) {
@@ -490,7 +489,6 @@ class Parser {
       TokenType.LT: parseInfixExpression,
       TokenType.GT: parseInfixExpression,
       TokenType.LPAREN: parseCall,
-      TokenType.BAR: parseCall,
       TokenType.DCOLON: parseMethodExpression,
       TokenType.ASSING: parseReassigment,
       TokenType.LBRACKET: parseCallList,
@@ -509,8 +507,9 @@ class Parser {
       TokenType.WHILE: parseWhile,
       TokenType.IDENT: parseIdentifier,
       TokenType.IF: parseIf,
+      TokenType.LPAREN: parseFunction,
       TokenType.INT: parseInteger,
-      TokenType.LPAREN: parseGroupExpression,
+      TokenType.BAR: parseGroupExpression,
       TokenType.MINUS: parsePrefixExpression,
       TokenType.NOT: parsePrefixExpression,
       TokenType.TRUE: parseBoolean,

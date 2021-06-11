@@ -5,6 +5,7 @@ enum TokenType {
   BAR,
   COMMA,
   COLON,
+  COLOASS,
   DATASTRCUT,
   DIVISION,
   DCOLON,

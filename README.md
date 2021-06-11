@@ -10,7 +10,7 @@ show(c); // prints 8
 ```
 
 ```dart
-@findMax = f(array) => {
+@findMax = (array) => {
     @max = 0;
     for(i in list) {
         if (i > max) {
