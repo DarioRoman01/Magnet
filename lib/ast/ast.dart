@@ -35,14 +35,11 @@ class Program extends ASTNode {
   Program(this.statements);
 
   @override
-  String str() {
-    var out = statements.map((s) => s.str());
-    return out.join('');
-  }
+  String str() => statements.map((s) => s.str()).join('');
 
   @override
   String tokenLitertal() {
-    return statements.isNotEmpty ? statements.first.token.literal : '';
+    return statements.isNotEmpty ? statements.first.tokenLitertal() : '';
   }
 }
 
@@ -143,11 +140,7 @@ class IfExpression extends Expression {
   String str() {
     var buff = StringBuffer();
     buff.write('if ${condition!.str()} ${consequence!.str()}');
-
-    if (alternative != null) {
-      buff.write('else ${consequence!.str()}');
-    }
-
+    if (alternative != null) buff.write('else ${alternative!.str()}');
     return buff.toString();
   }
 }
@@ -217,10 +210,7 @@ class ArrayExpression extends Expression {
   ArrayExpression(this.values, Token token) : super(token);
 
   @override
-  String str() {
-    final out = values.map((v) => v.str());
-    return '[${out.join(', ')}]';
-  }
+  String str() => '[${values.map((v) => v.str()).join(', ')}]';
 }
 
 class CallList extends Expression {

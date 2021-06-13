@@ -42,9 +42,9 @@ const Precedences = {
 
 class Parser {
   Lexer lexer;
-  late Token? lastToken;
-  late Token? currentToken;
-  late Token? peekToken;
+  Token? lastToken;
+  Token? currentToken;
+  Token? peekToken;
   late List<String> _errors;
   late PrefixParseFns prefixFns;
   late InfixParseFns infixFns;
@@ -69,21 +69,14 @@ class Parser {
   Precedence currentPrecedence() {
     assert(currentToken != null);
     var precedence = Precedences[currentToken?.tokenType];
-    if (precedence == null) {
-      return Precedence.LOWEST;
-    }
-
-    return precedence;
+    return precedence ?? Precedence.LOWEST;
   }
 
   Program parseProgram() {
     var program = Program(<Statement>[]);
     while (currentToken?.tokenType != TokenType.EOF) {
       var statement = parseStatement();
-      if (statement != null) {
-        program.statements.add(statement);
-      }
-      
+      if (statement != null) program.statements.add(statement);
       advanceTokens();
     }
 
@@ -92,11 +85,8 @@ class Parser {
 
   Expression parseBoolean() {
     assert(currentToken != null);
-    if (currentToken?.tokenType == TokenType.TRUE) {
-      return Boolean(true, currentToken!);
-    }
-
-    return Boolean(false, currentToken!);
+    return currentToken?.tokenType == TokenType.TRUE ? 
+    Boolean(true, currentToken!) : Boolean(true, currentToken!);
   }
 
   Expression parseCall(Expression func) {
@@ -116,23 +106,16 @@ class Parser {
 
     advanceTokens();
     var expression = parseExpression(Precedence.LOWEST);
-    if (expression != null) {
-      args.add(expression);
-    }
+    if (expression != null) args.add(expression);
 
     while (peekToken?.tokenType == TokenType.COMMA) {
       advanceTokens();
       advanceTokens();
       expression = parseExpression(Precedence.LOWEST);
-      if (expression != null) {
-        args.add(expression);
-      }
+      if (expression != null) args.add(expression);
     }
     
-    if (!expectedToken(TokenType.RPAREN)) {
-      return null;
-    }
-
+    if (!expectedToken(TokenType.RPAREN))  return null;
     return args;
   }
 
@@ -180,10 +163,7 @@ class Parser {
   Expression? parseGroupExpression() {
       advanceTokens();
       var expression = parseExpression(Precedence.LOWEST);
-      if (!expectedToken(TokenType.BAR)) {
-        return null;
-      }
-
+      if (!expectedToken(TokenType.BAR)) return null;
       return expression;
   }
 
@@ -191,9 +171,7 @@ class Parser {
     assert(currentToken != null);
     var keyVal = KeyValue(currentToken!, null, null);
     keyVal.key = parseExpression(Precedence.LOWEST);
-    if (!expectedToken(TokenType.COLON)) {
-      return null;
-    }
+    if (!expectedToken(TokenType.COLON)) return null;
 
     advanceTokens();
     keyVal.value = parseExpression(Precedence.LOWEST);
@@ -203,25 +181,19 @@ class Parser {
   Expression? parseMapExpression() {
     assert(currentToken != null);
     var mapExp = MapExpression(currentToken!, <KeyValue>[]);
-    if (peekToken?.tokenType == TokenType.RBRACE) {
-      return mapExp;
-    }
+    if (peekToken?.tokenType == TokenType.RBRACE) return mapExp;
 
     advanceTokens();
     var keyVal = parseKeyValue();
-    if (keyVal == null) {
-      return null;
-    }
+    if (keyVal == null) return null;
 
     mapExp.body.add(keyVal);
     while (peekToken?.tokenType == TokenType.COMMA) {
       advanceTokens();
       advanceTokens();
+
       keyVal = parseKeyValue();
-      if (keyVal == null) {
-        return null;
-      }
-      
+      if (keyVal == null) return null;
       mapExp.body.add(keyVal);
     }
 
@@ -263,28 +235,18 @@ class Parser {
     assert(currentToken != null);
     var func = FunctionExpression(null, null, currentToken!);
     func.parameters = parseFunctionParameters();
-    if (!expectedToken(TokenType.ARROW)) {
-      return null;
-    }
+    if (!expectedToken(TokenType.ARROW)) return null;
 
-    if (!expectedToken(TokenType.LBRACE)) {
-      return null;
-    }
-
+    if (!expectedToken(TokenType.LBRACE)) return null;
     func.body = parseBlock();
     return func;
   }
 
   Expression? parseInExpression() {
     var inExp = InExpression(currentToken!, null, null);
-    if (!expectedToken(TokenType.IDENT)) {
-      return null;
-    }
-
+    if (!expectedToken(TokenType.IDENT)) return null;
     inExp.ident = parseIdentifier();
-    if (!expectedToken(TokenType.IN)) {
-      return null;
-    }
+    if (!expectedToken(TokenType.IN)) return null;
 
     advanceTokens();
     inExp.range = parseExpression(Precedence.LOWEST);
@@ -321,11 +283,9 @@ class Parser {
     assert(currentToken != null);
     var callList = CallList(listIdent, null, currentToken!);
     advanceTokens();
-    callList.index = parseExpression(Precedence.LOWEST);
-    if (!expectedToken(TokenType.RBRACKET)) {
-      return null;
-    }
 
+    callList.index = parseExpression(Precedence.LOWEST);
+    if (!expectedToken(TokenType.RBRACKET)) return null;
     return callList;
   }
 
@@ -340,41 +300,25 @@ class Parser {
   Statement? parseLetStatement() {
     assert(currentToken != null);
     var statement = LetStatement(null, null, currentToken!);
-    if (!expectedToken(TokenType.IDENT)) {
-      print(currentToken?.printToken());
-      return null;
-    }
+    if (!expectedToken(TokenType.IDENT)) return null;
 
     statement.name = parseIdentifier();
-    if (!expectedToken(TokenType.ASSING)) {
-      return null;
-    }
-
+    if (!expectedToken(TokenType.ASSING)) return null;
     advanceTokens();
+
     statement.value = parseExpression(Precedence.LOWEST);
     assert(peekToken != null);
-    if (peekToken?.tokenType == TokenType.SEMICOLON) {
-      advanceTokens();
-    }
-
+    if (peekToken?.tokenType == TokenType.SEMICOLON) advanceTokens();
     return statement;
   }
 
   Expression? parseForLoop() {
     var forLoop = ForLoop(null, null, currentToken!);
-    if (!expectedToken(TokenType.LPAREN)) {
-      return null;
-    }
-
+    if (!expectedToken(TokenType.LPAREN)) return null;
     forLoop.condition = parseInExpression();
-    if (!expectedToken(TokenType.RPAREN)) {
-		  return null;
-	  }
 
-	  if (!expectedToken(TokenType.LBRACE)) {
-		  return null;
-	  }
-
+    if (!expectedToken(TokenType.RPAREN)) return null;
+	  if (!expectedToken(TokenType.LBRACE)) return null;
     forLoop.body = parseBlock();
     return forLoop;
   }
@@ -388,10 +332,7 @@ class Parser {
       !(currentToken?.tokenType == TokenType.RBRACE) && 
       !(currentToken?.tokenType == TokenType.EOF)) {
         var statement = parseStatement();
-        if (statement != null) {
-          block.statements.add(statement);
-        }
-
+        if (statement != null) block.statements.add(statement);
         advanceTokens();
     }
 
@@ -415,24 +356,17 @@ class Parser {
 
     advanceTokens();
     var expression = parseExpression(Precedence.LOWEST);
-    if (expression != null) {
-      values.add(expression);
-    }
+    if (expression != null) values.add(expression);
 
     while(peekToken?.tokenType == TokenType.COMMA) {
       advanceTokens();
       advanceTokens();
 
       expression = parseExpression(Precedence.LOWEST);
-      if (expression != null) {
-        values.add(expression);
-      }
+      if (expression != null) values.add(expression);
     }
 
-    if (!expectedToken(TokenType.RBRACKET)) {
-      return null;
-    }
-
+    if (!expectedToken(TokenType.RBRACKET)) return null;
     return values;
   }
 
@@ -445,22 +379,14 @@ class Parser {
 
     advanceTokens();
     ifExpression.condition = parseExpression(Precedence.LOWEST);
-    if (!expectedToken(TokenType.RPAREN)) {
-      return null;
-    }
-
-    if (!expectedToken(TokenType.LBRACE)) {
-      return null;
-    }
+    if (!expectedToken(TokenType.RPAREN)) return null;
+    if (!expectedToken(TokenType.LBRACE)) return null;
 
     ifExpression.consequence = parseBlock();
     assert(peekToken != null);
     if (peekToken?.tokenType == TokenType.ELSE) {
       advanceTokens();
-      if (!expectedToken(TokenType.LBRACE)) {
-        return null;
-      }
-
+      if (!expectedToken(TokenType.LBRACE)) return null;
       ifExpression.alternative = parseBlock();
     }
 
@@ -485,19 +411,12 @@ class Parser {
   Expression? parseWhile() {
     assert(currentToken != null);
     var whileExp = WhileLoop(null, null, currentToken!);
-    if (!expectedToken(TokenType.LPAREN)) {
-      return null;
-    }
+    if (!expectedToken(TokenType.LPAREN)) return null;
 
     advanceTokens();
     whileExp.condition = parseExpression(Precedence.LOWEST);
-    if (!expectedToken(TokenType.RPAREN)) {
-      return null;
-    }
-
-    if (!expectedToken(TokenType.LBRACE)) {
-      return null;
-    }
+    if (!expectedToken(TokenType.RPAREN)) return null;
+    if (!expectedToken(TokenType.LBRACE)) return null;
 
     whileExp.body = parseBlock();
     return whileExp;

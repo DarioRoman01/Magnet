@@ -9,11 +9,11 @@ Object length(List<Object> args) {
   }
 
   switch (args[0].runtimeType) {
-    case Str:
-      return Number((args[0] as Str).value.length);
+    case Str: return Number((args[0] as Str).value.length);
 
-    case Array:
-      return Number((args[0] as Array).values.length);
+    case Array: return Number((args[0] as Array).values.length);
+
+    case HashMap: return Number((args[0] as HashMap).store.length);
 
     default:
       return unsoportedArgumentType(args[0].type().toString());
@@ -39,6 +39,10 @@ Object show(List<Object> args) {
         break;
 
       case Bool:
+        buff.write(arg.inspect());
+        break;
+
+      case HashMap:
         buff.write(arg.inspect());
         break;
       
@@ -147,13 +151,9 @@ Object objType(List<Object> args) {
   return Str(args[0].type().toString());
 }
 
-Error wronNumberOfArgs(int expected, found) {
-  return Error('Expected $expected args but got $found');
-}
+Error wronNumberOfArgs(int expected, found) => Error('Expected $expected args but got $found');
 
-Error unsoportedArgumentType(String type) {
-  return Error('Unsoported Argument type: $type');
-}
+Error unsoportedArgumentType(String type) => Error('Unsoported Argument type: $type');
 
 final Builtins = {
   'len': BuiltIn(length),
