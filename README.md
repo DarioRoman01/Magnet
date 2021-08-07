@@ -2,29 +2,26 @@
 Magnet is high level programming lenguage inspired in rust but without static typing.
 
 syntax examples:
+## Variables: 
 ```dart
 @a = 3;
 @b = 5;
 @c = a + b;
 show(c); // prints 8
 ```
-
+## Functions:
+To define a functions you need to use this syntax:
 ```dart
-@findMax = (array) => {
-    @max = 0;
-    for(i in array) {
-        if (i > max) {
-            max = i
-        }
-    }
-
-    return max;
+@name = (param) => {
+    // body
 }
-
-@list = [2,4,32,54,2];
-@result = findMax(list);
-show(result); // output: 54
 ```
+
+for example:
+```dart
+@sayHi = (name) => show("Hello " + name + "!");
+```
+
 
 ```dart
 @list = [2,3,4];
@@ -55,4 +52,20 @@ ages::keys();
 ages::values();
 ```
 
+```dart
+@findMax = (array) => {
+    @max = 0;
+    for(i in array) {
+        if (i > max) {
+            max = i;
+        }
+    }
+
+    return max;
+}
+
+@list = [2,4,32,54,2];
+@result = findMax(list);
+show(result); // output: 54
+```
 

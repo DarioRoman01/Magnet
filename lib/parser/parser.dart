@@ -237,6 +237,19 @@ class Parser {
     func.parameters = parseFunctionParameters();
     if (!expectedToken(TokenType.ARROW)) return null;
 
+
+    if (peekToken?.tokenType != TokenType.LBRACE) {
+      advanceTokens();
+      var body = Block(<Statement>[], currentToken!);
+      var state = parseStatement();
+      if (state != null) body.statements.add(state);
+      
+      if(currentToken?.tokenType != TokenType.SEMICOLON) return null;
+      func.body = body;
+      advanceTokens();
+      return func;
+    }
+
     if (!expectedToken(TokenType.LBRACE)) return null;
     func.body = parseBlock();
     return func;

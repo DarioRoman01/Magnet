@@ -89,7 +89,7 @@ class Def extends Object {
   @override
   String inspect() {
     var args = parameters.map((p) => p.str());
-    return 'def(${args.join(", ")}) => {\n ${body.str()} \n}';
+    return '(${args.join(", ")}) => {${body.str()}}';
   }
 
   @override
@@ -197,7 +197,7 @@ class HashMap extends Object {
   @override
   String inspect() {
     final str = store.map((k, v) => MapEntry(k.inspect(), v.inspect()));
-    final out = JsonEncoder.withIndent('\n').convert(str);
+    final out = JsonEncoder.withIndent(' ').convert(str);
     return out;
   }
 

@@ -217,7 +217,7 @@ Object applyFunction(Object fn, List<Object> args) {
     return (fn as BuiltIn).fn(args);
   }
 
-  return notAFunction(fn.type().toString());
+  return notAFunction(fn.inspect());
 }
 
 Enviroment extendFunctionEnviroment(Def fn, List<Object> args) {
@@ -234,9 +234,7 @@ Object unwrapReturnValue(Object obj) {
 }
 
 Object evaluateArray(ArrayExpression arr, Enviroment env) {
-  var list = Array(<Object>[]);
-  arr.values.forEach((val) => list.values.add(evaluate(val, env)));
-  return list;
+  return Array(arr.values.map((e) => evaluate(e, env)).toList());
 }
 
 Object evaluateIdentifier(Identifier node, Enviroment env) {
@@ -298,6 +296,8 @@ List<Object> evaluateExpression(List<Expression> expressions, Enviroment env) {
   var result = <Object>[];
   expressions.forEach((exp) => result.add(evaluate(exp, env)));
   return result;
+
+  // return expressions.map((e) => evaluate(e, env)).toList();
 }
 
 Object evaluateCallList(CallList callList, Enviroment env) {
@@ -357,7 +357,7 @@ Object evuateForLoop(ForLoop loop, Enviroment env) {
   } 
 
   catch(e) {
-    if (evaluated.runtimeType == Error) return evaluated as Error;
+    if (evaluated.runtimeType == Error) return evaluated;
     return Error('error while evaluating for loop');
   }
 }
